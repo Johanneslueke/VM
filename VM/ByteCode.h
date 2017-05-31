@@ -4,16 +4,16 @@
 
 #ifndef UTILITY_BYTECODE_H
 #define UTILITY_BYTECODE_H
-
+#include <memory>
 namespace vm
 {
 
-	class Instruction {
-	public:
+	struct Instruction {
+
 		std::string mName;
 		int         mNumericName;
 		int         mOperandCount;
-	public:
+
 		Instruction(const std::string& OpCode, int Value, int operands)
 			: mName(OpCode), mNumericName(Value), mOperandCount(operands)
 		{
@@ -27,59 +27,64 @@ namespace vm
 	};
 
 	enum ByteCodes {
-		IADD = 1, //Integer
+		IADD = 1,	
 		ISUB,
 		IMUL,
-		ILT, //Integer Less than
-		IEQ, //Integer EQUAL
-		IPUSH,  //Floating Point
+		ILT,		//Integer Less than
+		IEQ,		//Integer EQUAL
+		IPUSH,		//Integer
 		FADD,
 		FSUB,
 		FMUL,
-		FPUSH,
+		FLT,		//Float Less than
+		FEQ,		//Float EQUAL
+		FPUSH,		//Floating Point
 		PRINT,
 		HALT,
 		POP,
-		GSTORE, //Stores Value Globally
+		GSTORE,		//Stores Value Globally
 		GLOAD,
-		STORE, //Stores Value Locally
+		STORE,		//Stores Value Locally
 		LOAD,
-		BRANCH, // unconditional branch
-		BRTRUE, // conditional branches
+		BRANCH,		// unconditional branch
+		BRTRUE,		// conditional branches
 		BRFALSE,
-		CALL,  //Function call
-		RET,
+		CALL,		//Function call
+		RET,		//Returns to the Point after the Call
 
 		MAXCODE
 	};
-	Instruction* InstructionCode[] = {
+	
+	std::unique_ptr<Instruction> InstructionCode[] = {
 		nullptr,
-		new Instruction("IADD",IADD),
-		new Instruction("ISUB",ISUB),
-		new Instruction("IMUL",IMUL),
-		new Instruction("IEQ",IEQ),
-		new Instruction("ILT",ILT),
-		new Instruction("IPUSH",IPUSH,1),
+		std::make_unique< Instruction>("IADD",IADD),
+		std::make_unique< Instruction>("ISUB",ISUB),
+		std::make_unique< Instruction>("IMUL",IMUL),
+		std::make_unique< Instruction>("IEQ",IEQ),
+		std::make_unique< Instruction>("ILT",ILT),
+		std::make_unique< Instruction>("IPUSH",IPUSH,1),
 
-		new Instruction("FADD",FADD),
-		new Instruction("FSUB",FSUB),
-		new Instruction("FMUL",FMUL),
-		new Instruction("FPUSH",FPUSH,1),
+		std::make_unique< Instruction>("FADD",FADD),
+		std::make_unique< Instruction>("FSUB",FSUB),
+		std::make_unique< Instruction>("FMUL",FMUL),
+		std::make_unique< Instruction>("FEQ",FEQ),
+		std::make_unique< Instruction>("FLT",FLT),
+		std::make_unique< Instruction>("FPUSH",FPUSH,1),
 
-		new Instruction("Print",PRINT),
-		new Instruction("HALT",HALT),
-		new Instruction("POP",POP),
+		std::make_unique< Instruction>("Print",PRINT),
+		std::make_unique< Instruction>("HALT",HALT),
+		std::make_unique< Instruction>("POP",POP),
 
-		new Instruction("GSTORE",GSTORE,1),
-		new Instruction("GLOAD",GLOAD,1),
-		new Instruction("STORE",STORE,1),
-		new Instruction("LOAD",LOAD,1),
+		std::make_unique< Instruction>("GSTORE",GSTORE,1),
+		std::make_unique< Instruction>("GLOAD",GLOAD,1),
+		std::make_unique< Instruction>("STORE",STORE,1),
+		std::make_unique< Instruction>("LOAD",LOAD,1),
 
-		new Instruction("BRANCH",BRANCH,1),
-		new Instruction("BRTRUE",BRTRUE,1),
-		new Instruction("BRFALSE",BRFALSE,1),
-		new Instruction("CALL",CALL,2),
-		new Instruction("RET",RET),
+		std::make_unique< Instruction>("BRANCH",BRANCH,1),
+		std::make_unique< Instruction>("BRTRUE",BRTRUE,1),
+		std::make_unique< Instruction>("BRFALSE",BRFALSE,1),
+		std::make_unique< Instruction>("CALL",CALL,2),
+		std::make_unique< Instruction>("RET",RET),
 
 
 

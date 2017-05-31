@@ -62,9 +62,9 @@ namespace vm
 		Memory        stack;
 		Memory        code;
 
-		int                     instructionPointer = -1;
-		int                     stackPointer = -1;
-		int                     framePointer = -1;
+		size_t                     instructionPointer = -1;
+		long                       stackPointer = -1;
+		size_t                     framePointer = -1;
 
 		bool                    trace = true;
 
@@ -120,6 +120,7 @@ namespace vm
 				instructionPointer++;
 
 				switch (opcode) {
+
 				case IPUSH: {
 					auto value = code[instructionPointer].mValue.mInteger;
 					instructionPointer++;
@@ -171,9 +172,10 @@ namespace vm
 					break;
 				}
 				case IADD: {
-					auto rhs = stack[stackPointer--]; //Right-Hand-Side operand
+					auto rhs = stack[stackPointer--];	//Right-Hand-Side operand
 					auto lhs = stack[stackPointer--];   //Left-Hand-Side operand
-														//Implicit typecasting
+					
+					//Implicit typecasting Float -> Integer
 					if (rhs.mObjecttype == Type::FLOAT)
 						rhs = Type{ Type::INT,(long )rhs.mValue.mFloat };
 					if (lhs.mObjecttype == Type::FLOAT)
@@ -260,10 +262,41 @@ namespace vm
 					stackPointer++;
 					break;
 				}
-				case POP:
+				case FEQ: {
+					auto rhs = stack[stackPointer--]; //Right-Hand-Side operand
+					auto lhs = stack[stackPointer--];   //Left-Hand-Side operand
+														//Implicit typecasting
+					if (rhs.mObjecttype == Type::INT)
+						rhs = Type{ Type::INT,(float)rhs.mValue.mInteger };
+					if (lhs.mObjecttype == Type::INT)
+						lhs = Type{ Type::INT,(float)rhs.mValue.mInteger };
+
+					stack.pop_back();
+					stack.pop_back();
+					stack.push_back(Type{ Type::INT,{ (long)(lhs.mValue.mInteger == rhs.mValue.mInteger) } });
+					stackPointer++;
+					break;
+				}
+				case FLT: {
+					auto rhs = stack[stackPointer--]; //Right-Hand-Side operand
+					auto lhs = stack[stackPointer--];   //Left-Hand-Side operand
+														//Implicit typecasting
+					if (rhs.mObjecttype == Type::INT)
+						rhs = Type{ Type::INT,(float)rhs.mValue.mInteger };
+					if (lhs.mObjecttype == Type::INT)
+						lhs = Type{ Type::INT,(float)rhs.mValue.mInteger };
+
+					stack.pop_back();
+					stack.pop_back();
+					stack.push_back(Type{ Type::INT,{ (long)(lhs.mValue.mInteger < rhs.mValue.mInteger) } });
+					stackPointer++;
+					break;
+				}
+				case POP: {
 					stack.pop_back();
 					stackPointer--;
 					break;
+				}					
 				case GSTORE: {
 					auto addr = code[instructionPointer++];
 					globals[addr.mValue.mInteger] = stack[stackPointer--];
@@ -339,6 +372,9 @@ namespace vm
 				}
 				case LOAD: {
 					auto offset = code[instructionPointer++];
+					if (offset.mObjecttype == Type::FLOAT)
+						offset = Type{ Type::FLOAT,(int)offset.mValue.mFloat };
+
 					pushOntoStack(stack[framePointer + offset.mValue.mInteger]);
 					break;
 				}
@@ -347,12 +383,13 @@ namespace vm
 					stack[framePointer + offset.mValue.mInteger] = popOffStack();
 					break;
 				}
+
 				case HALT:
 					return;
 				default: {
 					if (opcode < MAXCODE)
 						if (opcode < 0)
-							throw std::runtime_error("Opcode Mismatch");
+							throw std::runtime_error("Opcode Mismatch No Negative instructions please ");
 						throw std::runtime_error("Opcode not implemented yet: "
 							+ InstructionCode[opcode]->mName
 							+ "! at Instruction Pointer("
@@ -371,7 +408,7 @@ namespace vm
 			int opcode = code[instructionPointer].mValue.mInteger;
 			if (opcode != 0 && opcode < MAXCODE) //Print Code section
 			{
-				buffer << std::showbase << std::setbase(16)
+				buffer << std::showbase << std::setbase(10)
 					<< std::setw(4 * 2) << std::left << instructionPointer << std::dec << ": \t"
 					<< std::setw(4 * 2) << std::left << InstructionCode[opcode]->mName;
 

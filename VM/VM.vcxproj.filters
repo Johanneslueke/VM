@@ -21,6 +21,9 @@
     <ClInclude Include="VM.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ByteCodeFileReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
