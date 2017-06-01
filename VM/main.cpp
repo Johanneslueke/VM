@@ -118,12 +118,12 @@ int main() {
 
 	try {
 		///auto exe = &VM::cpu;
-		//auto avg = (measure<std::chrono::milliseconds>::duration(Machine) );
+		auto avg = (measure<std::chrono::milliseconds>::duration(Machine) );
 
 
-		//std::cout << "Average Time: " << avg.count() << " ms\n";
+		std::cout << "Average Time: " << avg.count() << " ms\n";
 
-		Machine.cpu();
+		//Machine.cpu();
 	}
 	catch (std::exception& e)
 	{

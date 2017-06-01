@@ -34,8 +34,40 @@ namespace vm
 			Machine.stackPointer++;
 
 		});
-		InstructionCode[ISUB] = std::make_unique< Instruction>("ISUB", ISUB);
-		InstructionCode[IMUL] = std::make_unique< Instruction>("IMUL", IMUL);
+		InstructionCode[ISUB] = std::make_unique< Instruction>("ISUB", ISUB,[](VM& Machine) {
+
+			auto rhs = Machine.stack[Machine.stackPointer--];	//Right-Hand-Side operand
+			auto lhs = Machine.stack[Machine.stackPointer--];   //Left-Hand-Side operand
+
+																//Implicit typecasting Float -> Integer
+			if (rhs.mObjecttype == VM::Type::FLOAT)
+				rhs = VM::Type{ VM::Type::INT,(long)rhs.mValue.mFloat };
+			if (lhs.mObjecttype == VM::Type::FLOAT)
+				lhs = VM::Type{ Type::INT,(long)rhs.mValue.mFloat };
+
+			Machine.stack.pop_back();
+			Machine.stack.pop_back();
+			Machine.stack.push_back(VM::Type{ VM::Type::INT,{ (lhs.mValue.mInteger - rhs.mValue.mInteger) } });
+			Machine.stackPointer++;
+
+		});
+		InstructionCode[IMUL] = std::make_unique< Instruction>("IMUL", IMUL,[](VM& Machine) {
+
+			auto rhs = Machine.stack[Machine.stackPointer--];	//Right-Hand-Side operand
+			auto lhs = Machine.stack[Machine.stackPointer--];   //Left-Hand-Side operand
+
+																//Implicit typecasting Float -> Integer
+			if (rhs.mObjecttype == VM::Type::FLOAT)
+				rhs = VM::Type{ VM::Type::INT,(long)rhs.mValue.mFloat };
+			if (lhs.mObjecttype == VM::Type::FLOAT)
+				lhs = VM::Type{ Type::INT,(long)rhs.mValue.mFloat };
+
+			Machine.stack.pop_back();
+			Machine.stack.pop_back();
+			Machine.stack.push_back(VM::Type{ VM::Type::INT,{ (lhs.mValue.mInteger * rhs.mValue.mInteger) } });
+			Machine.stackPointer++;
+
+		});
 		InstructionCode[IEQ] = std::make_unique< Instruction>("IEQ", IEQ);
 		InstructionCode[ILT] = std::make_unique< Instruction>("ILT", ILT);
 		InstructionCode[IPUSH] = std::make_unique< Instruction>("IPUSH", IPUSH, 1);
@@ -132,22 +164,9 @@ namespace vm
 				stackPointer++;
 				break;
 			}
-			case IADD: {
-				auto rhs = stack[stackPointer--];	//Right-Hand-Side operand
-				auto lhs = stack[stackPointer--];   //Left-Hand-Side operand
-
-													//Implicit typecasting Float -> Integer
-				if (rhs.mObjecttype == Type::FLOAT)
-					rhs = Type{ Type::INT,(long)rhs.mValue.mFloat };
-				if (lhs.mObjecttype == Type::FLOAT)
-					lhs = Type{ Type::INT,(long)rhs.mValue.mFloat };
-
-				stack.pop_back();
-				stack.pop_back();
-				stack.push_back(Type{ Type::INT,{ (lhs.mValue.mInteger + rhs.mValue.mInteger) } });
-				stackPointer++;
+			case IADD:
+				InstructionCode[opcode]->mInstruction(*this);
 				break;
-			}
 			case ISUB: {
 				auto rhs = stack[stackPointer--]; //Right-Hand-Side operand
 				auto lhs = stack[stackPointer--];   //Left-Hand-Side operand
