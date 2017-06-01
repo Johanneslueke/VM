@@ -78,7 +78,7 @@ int main() {
 		INSTR(GLOAD, 1,INT),			// 20
 		INSTR(GLOAD, 0,INT)	,			// 22
 		SINSTR(ILT),					// 24
-		INSTR(BRTRUE, 8,POINTER),		// 25;
+		INSTR(BRTRUE, 8ull,POINTER),		// 25;
 										
 		SINSTR(HALT)					// 26
 	};
@@ -86,35 +86,35 @@ int main() {
 	Type factorial[] = {
 		//Instruction						// ADDRESS
 		///Function factorial(var N)		// ARGS=1, LOCALS=0		
-		INSTR(LOAD, -3,FLOAT),				// [0]		Copy Given Argument N Into Current StackFrame
-		INSTR(FPUSH, 2.0,FLOAT),				// [2]		Push Constant (2) Onto Stack
-		SINSTR(FLT),						// [4]		IF ((N < 2) == TRUE) Push TRUE ELSE Push FALSE Onto Stack
+		INSTR(LOAD, -3,INT),				// [0]		Copy Given Argument N Into Current StackFrame
+		INSTR(IPUSH, 2,INT),				// [2]		Push Constant (2) Onto Stack
+		SINSTR(ILT),						// [4]		IF ((N < 2) == TRUE) Push TRUE ELSE Push FALSE Onto Stack
 		INSTR(BRFALSE, 10ull,POINTER),		// [5]		Jump to Addr 10 if on Stack lays FALSE
-		INSTR(IPUSH, 1.0,FLOAT),				// [7]		Push Constant (1) Onto Stack
+		INSTR(IPUSH, 1,INT),				// [7]		Push Constant (1) Onto Stack
 		SINSTR(RET),						// [9]		Return Constant (1)[7]
 											// 
 											//			RETURN N * factorial( N-1 )
-		INSTR(LOAD, -3,FLOAT),				// [10]		Copy Given Argument N Into Current StackFrame
-		INSTR(LOAD, -3,FLOAT),				// [12]		Copy Given Argument N Into Current StackFrame
-		INSTR(FPUSH, 1.0,FLOAT),				// [14]		Push Constant (1) Onto Stack
-		SINSTR(FSUB),						// [16]		Substract Constant (1) of Value (N) 
+		INSTR(LOAD, -3,INT),				// [10]		Copy Given Argument N Into Current StackFrame
+		INSTR(LOAD, -3,INT),				// [12]		Copy Given Argument N Into Current StackFrame
+		INSTR(IPUSH, 1,INT),				// [14]		Push Constant (1) Onto Stack
+		SINSTR(ISUB),						// [16]		Substract Constant (1) of Value (N) 
 		DINSTR(CALL, 0ull, 1,POINTER,INT),	// [17]		Call Function: factorial(var N)
-		SINSTR(FMUL),						// [20]		Multiplicate Result of (factorial(var N))[17] times Value (N)[10]
+		SINSTR(IMUL),						// [20]		Multiplicate Result of (factorial(var N))[17] times Value (N)[10]
 		SINSTR(RET),						// [21]		Return Result[20]
 		/// Function Main()					// ARGS=0, LOCALS=0
 		//									 <-- MAIN METHOD!
-		INSTR(FPUSH, 5.0f,FLOAT),				// [22]		Push Constant (5) Onto StacK
-		DINSTR(CALL, 0ull, 1.0,POINTER,FLOAT),	// [25]		Call Function: factorial(var N)
+		INSTR(IPUSH, 5,INT),				// [22]		Push Constant (5) Onto StacK
+		DINSTR(CALL, 0ull, 1,POINTER,INT),	// [25]		Call Function: factorial(var N)
 		SINSTR(PRINT),						// [26]		Print Stack Top
 		SINSTR(HALT)						// [27]		Abort
 	};
 
 
 
-	VM::Memory CodeInstructions(std::begin(factorial), std::end(factorial));
+	VM::Memory CodeInstructions(std::begin(CodeLoop), std::end(CodeLoop));
 
 
-	VM Machine(CodeInstructions, 22);
+	VM Machine(CodeInstructions, 0);
 
 	try {
 		///auto exe = &VM::cpu;
