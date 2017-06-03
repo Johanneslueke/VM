@@ -345,38 +345,33 @@ namespace vm
 		while (instructionPointer <= code.size())
 		{
 			auto opcode = code[instructionPointer].mValue.mInteger; // fetch OpCode
+			instructionPointer++;
+			
+
+			if (opcode < 0)
+				throw std::runtime_error("Opcode Mismatch No Negative instructions please ");
+			else if(opcode > MAXCODE)
+				throw std::runtime_error("Opcode not supported: "
+					+ std::to_string(opcode)
+					+ "! at Instruction Pointer("
+					+ std::to_string(instructionPointer - 1) + ").");
+			
 
 			if (trace) {
 				std::cout << std::left << std::setw(40) << disassemble() << std::right
 					<< stackString() << "\n";
-				//auto avg = (measure<std::chrono::nanoseconds>::duration(InstructionCode[opcode]->mInstruction, *this));
-				//std::cerr << "--->>" << avg.count() << "\n";
+				auto avg = (measure<std::chrono::nanoseconds>::duration(InstructionCode[opcode]->mInstruction, *this));
+				std::cerr << "--->>" << avg.count() << "\n";
 			}
-
-
-			instructionPointer++;
-
-			/*if (opcode < MAXCODE)
-				if (opcode < 0)
-					throw std::runtime_error("Opcode Mismatch No Negative instructions please ");
-			throw std::runtime_error("Opcode not implemented yet: "
-				+ InstructionCode[opcode]->mName
-				+ "! at Instruction Pointer("
-				+ std::to_string(instructionPointer - 1) + ").");
-			throw std::runtime_error("Opcode not supported: "
-				+ std::to_string(opcode)
-				+ "! at Instruction Pointer("
-				+ std::to_string(instructionPointer - 1) + ").");*/
-
-			
-			InstructionCode[opcode]->mInstruction(*this);
-			
+			else {
+				InstructionCode[opcode]->mInstruction(*this);
+			}	
 		}
 	}
 
 	std::string VM::disassemble() const {
 		std::stringstream buffer;
-		int opcode = code[instructionPointer].mValue.mInteger;
+		int opcode = code[instructionPointer-1].mValue.mInteger;
 		if (opcode != 0 && opcode < MAXCODE) //Print Code section
 		{
 			buffer << std::showbase << std::setbase(10)

@@ -7,7 +7,9 @@
 #include <vector>
 
 #define INSTR(CODE,VAL,TYPE) Type{vm::VM::Type::INT,	{(long long)CODE}	}, \
-							 Type{vm::VM::Type::TYPE,	{VAL}	}
+							 Type{vm::VM::Type::TYPE,	{VAL}				}
+
+
 #define DINSTR(CODE,VAL1,VAL2,TYPE1,TYPE2) Type{vm::VM::Type::INT,		{(long long)CODE}	},\
 										   Type{vm::VM::Type::TYPE1,	{VAL1}	},\
 										   Type{vm::VM::Type::TYPE2,	{VAL2}	}
