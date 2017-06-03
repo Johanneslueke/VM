@@ -12,24 +12,8 @@ namespace vm
 
 	class VM;
 
-	struct Instruction {
-
-		std::string mName;
-		int         mNumericName;
-		int         mOperandCount;
-		std::function<void(VM&)>	mInstruction;
-
-		Instruction(const std::string& OpCode, int Value, int operands);
-		Instruction(const std::string& OpCode, int Value);
-		Instruction(const std::string& OpCode, int Value, int operands, std::function<void(VM&)> lambda);
-		Instruction(const std::string& OpCode, int Value, std::function<void(VM&)> lambda);
-
-		virtual ~Instruction() = default;
-		
-	};
-
-	enum ByteCodes {
-		IADD = 1,	
+	enum ByteCodes : long {
+		IADD = 1,
 		ISUB,
 		IMUL,
 		ILT,		//Integer Less than
@@ -56,8 +40,26 @@ namespace vm
 
 		MAXCODE
 	};
+
+	struct Instruction {
+
+		std::string mName;
+		int         mNumericName;
+		int         mOperandCount;
+		std::function<void(VM&)>	mInstruction;
+
+		Instruction(const std::string& OpCode, int Value, int operands);
+		Instruction(const std::string& OpCode, int Value);
+		Instruction(const std::string& OpCode, int Value, int operands, std::function<void(VM&)> lambda);
+		Instruction(const std::string& OpCode, int Value, std::function<void(VM&)> lambda);
+
+		virtual ~Instruction() = default;
+		
+	};
+
 	
-	static std::unique_ptr<Instruction> InstructionCode[MAXCODE]; 
+	
+	extern std::unique_ptr<Instruction> InstructionCode[]; 
 
 
 }

@@ -9,6 +9,8 @@
 
 #include "VM.h"
 
+#include "Measurement.h"
+
 namespace vm
 {
 	VM::VM(const std::vector<Type>& code, int main) : globals(1000)
@@ -17,16 +19,16 @@ namespace vm
 		this->instructionPointer = main;
 
 		InstructionCode[0] = nullptr;
-		InstructionCode[IADD] = std::make_unique< Instruction>("IADD", IADD, [](VM& Machine) {
+		Instruction("IADD", IADD, [](VM& Machine) {
 
 			auto rhs = Machine.stack[Machine.stackPointer--];	//Right-Hand-Side operand
 			auto lhs = Machine.stack[Machine.stackPointer--];   //Left-Hand-Side operand
 
 																//Implicit typecasting Float -> Integer
 			if (rhs.mObjecttype == VM::Type::FLOAT)
-				rhs = VM::Type{ VM::Type::INT,(long)rhs.mValue.mFloat };
+				rhs = VM::Type{ VM::Type::INT,(long long)rhs.mValue.mFloat };
 			if (lhs.mObjecttype == VM::Type::FLOAT)
-				lhs = VM::Type{ Type::INT,(long)rhs.mValue.mFloat };
+				lhs = VM::Type{ Type::INT,(long long)rhs.mValue.mFloat };
 
 			Machine.stack.pop_back();
 			Machine.stack.pop_back();
@@ -34,16 +36,16 @@ namespace vm
 			Machine.stackPointer++;
 
 		});
-		InstructionCode[ISUB] = std::make_unique< Instruction>("ISUB", ISUB,[](VM& Machine) {
+		Instruction("ISUB", ISUB,[](VM& Machine) {
 
 			auto rhs = Machine.stack[Machine.stackPointer--];	//Right-Hand-Side operand
 			auto lhs = Machine.stack[Machine.stackPointer--];   //Left-Hand-Side operand
 
 																//Implicit typecasting Float -> Integer
 			if (rhs.mObjecttype == VM::Type::FLOAT)
-				rhs = VM::Type{ VM::Type::INT,(long)rhs.mValue.mFloat };
+				rhs = VM::Type{ VM::Type::INT,(long long)rhs.mValue.mFloat };
 			if (lhs.mObjecttype == VM::Type::FLOAT)
-				lhs = VM::Type{ Type::INT,(long)rhs.mValue.mFloat };
+				lhs = VM::Type{ Type::INT,(long long)rhs.mValue.mFloat };
 
 			Machine.stack.pop_back();
 			Machine.stack.pop_back();
@@ -51,16 +53,16 @@ namespace vm
 			Machine.stackPointer++;
 
 		});
-		InstructionCode[IMUL] = std::make_unique< Instruction>("IMUL", IMUL,[](VM& Machine) {
+		Instruction("IMUL", IMUL,[](VM& Machine) {
 
 			auto rhs = Machine.stack[Machine.stackPointer--];	//Right-Hand-Side operand
 			auto lhs = Machine.stack[Machine.stackPointer--];   //Left-Hand-Side operand
 
 																//Implicit typecasting Float -> Integer
 			if (rhs.mObjecttype == VM::Type::FLOAT)
-				rhs = VM::Type{ VM::Type::INT,(long)rhs.mValue.mFloat };
+				rhs = VM::Type{ VM::Type::INT,(long long)rhs.mValue.mFloat };
 			if (lhs.mObjecttype == VM::Type::FLOAT)
-				lhs = VM::Type{ Type::INT,(long)rhs.mValue.mFloat };
+				lhs = VM::Type{ Type::INT,(long long)rhs.mValue.mFloat };
 
 			Machine.stack.pop_back();
 			Machine.stack.pop_back();
@@ -68,136 +70,55 @@ namespace vm
 			Machine.stackPointer++;
 
 		});
-		InstructionCode[IEQ] = std::make_unique< Instruction>("IEQ", IEQ);
-		InstructionCode[ILT] = std::make_unique< Instruction>("ILT", ILT);
-		InstructionCode[IPUSH] = std::make_unique< Instruction>("IPUSH", IPUSH, 1);
+		Instruction("IEQ", IEQ, [](VM& Machine) {
 
-		InstructionCode[FADD] = std::make_unique< Instruction>("FADD", FADD);
-		InstructionCode[FSUB] = std::make_unique< Instruction>("FSUB", FSUB);
-		InstructionCode[FMUL] = std::make_unique< Instruction>("FMUL", FMUL);
-		InstructionCode[FEQ] = std::make_unique< Instruction>("FEQ", FEQ);
-		InstructionCode[FLT] = std::make_unique< Instruction>("FLT", FLT);
-		InstructionCode[FPUSH] = std::make_unique< Instruction>("FPUSH", FPUSH, 1);
+			{
+				auto rhs = Machine.stack[Machine.stackPointer--]; //Right-Hand-Side operand
+				auto lhs = Machine.stack[Machine.stackPointer--];   //Left-Hand-Side operand
+													//Implicit typecasting
+				if (rhs.mObjecttype == Type::FLOAT)
+					rhs = Type{ Type::INT,(long long)rhs.mValue.mFloat };
+				if (lhs.mObjecttype == Type::FLOAT)
+					lhs = Type{ Type::INT,(long long)rhs.mValue.mFloat };
 
-		InstructionCode[PRINT] = std::make_unique< Instruction>("Print", PRINT);
-		InstructionCode[HALT] = std::make_unique< Instruction>("HALT", HALT);
-		InstructionCode[POP] = std::make_unique< Instruction>("POP", POP);
-
-		InstructionCode[GSTORE] = std::make_unique< Instruction>("GSTORE", GSTORE, 1);
-		InstructionCode[GLOAD] = std::make_unique< Instruction>("GLOAD", GLOAD, 1);
-		InstructionCode[STORE] = std::make_unique< Instruction>("STORE", STORE, 1);
-		InstructionCode[LOAD] = std::make_unique< Instruction>("LOAD", LOAD, 1);
-
-		InstructionCode[BRANCH] = std::make_unique< Instruction>("BRANCH", BRANCH, 1);
-		InstructionCode[BRTRUE] = std::make_unique< Instruction>("BRTRUE", BRTRUE, 1);
-		InstructionCode[BRFALSE] = std::make_unique< Instruction>("BRFALSE", BRFALSE, 1);
-		InstructionCode[CALL] = std::make_unique< Instruction>("CALL", CALL, 2);
-		InstructionCode[RET] = std::make_unique< Instruction>("RET", RET);
-	}
-
-	void VM::cpu()
-	{
-		if (trace)
-			std::cout << std::left << std::setw(44) << "Instruction & Results:" << std::right << "Stack Memory:\n";
-		while (instructionPointer <= code.size())
-		{
-			auto opcode = code[instructionPointer].mValue.mInteger; // fetch OpCode
-			if (trace) {
-				std::cout << std::left << std::setw(40) << disassemble() << std::right
-					<< stackString() << "\n";
+				Machine.stack.pop_back();
+				Machine.stack.pop_back();
+				Machine.stack.push_back(Type{ Type::INT,{ (long long)(lhs.mValue.mInteger == rhs.mValue.mInteger) } });
+				Machine.stackPointer++;
+			
 			}
+		
+		});
+		Instruction("ILT", ILT, [this](VM& ) {
 
+			{
+				auto rhs = stack[stackPointer--]; //Right-Hand-Side operand
+				auto lhs = stack[stackPointer--];   //Left-Hand-Side operand
+													//Implicit typecasting
+				if (rhs.mObjecttype == Type::FLOAT)
+					rhs = Type{ Type::INT,(long long)rhs.mValue.mFloat };
+				if (lhs.mObjecttype == Type::FLOAT)
+					lhs = Type{ Type::INT,(long long)rhs.mValue.mFloat };
 
-			instructionPointer++;
-
-
-
-			switch (opcode) {
-
-			case IPUSH: {
-				auto value = code[instructionPointer].mValue.mInteger;
+				stack.pop_back();
+				stack.pop_back();
+				stack.push_back(Type{ Type::INT,{ (long long)(lhs.mValue.mInteger < rhs.mValue.mInteger) } });
+				stackPointer++;
+				
+			}
+		});
+		Instruction("IPUSH", IPUSH, 1, [this](VM&) {
+			{
+				auto value = this->code[instructionPointer].mValue.mInteger;
 				instructionPointer++;
 				stackPointer++;
 				stack.push_back(Type{ Type::INT,{ value } });
-				break;
 			}
-			case FPUSH: {
-				auto value = code[instructionPointer].mValue.mFloat;
-				instructionPointer++;
-				stackPointer++;
-				stack.push_back(Type{ Type::FLOAT,{ value } });
-				break;
-			}
-			case PRINT: {
-				std::cout << stack[stackPointer].mValue.mInteger << "\n";
-				stack.pop_back();
-				stackPointer--;
-				break;
-			}
-			case IEQ: {
-				auto rhs = stack[stackPointer--]; //Right-Hand-Side operand
-				auto lhs = stack[stackPointer--];   //Left-Hand-Side operand
-													//Implicit typecasting
-				if (rhs.mObjecttype == Type::FLOAT)
-					rhs = Type{ Type::INT,(long)rhs.mValue.mFloat };
-				if (lhs.mObjecttype == Type::FLOAT)
-					lhs = Type{ Type::INT,(long)rhs.mValue.mFloat };
+		});
 
-				stack.pop_back();
-				stack.pop_back();
-				stack.push_back(Type{ Type::INT,{ (long)(lhs.mValue.mInteger == rhs.mValue.mInteger) } });
-				stackPointer++;
-				break;
-			}
-			case ILT: {
-				auto rhs = stack[stackPointer--]; //Right-Hand-Side operand
-				auto lhs = stack[stackPointer--];   //Left-Hand-Side operand
-													//Implicit typecasting
-				if (rhs.mObjecttype == Type::FLOAT)
-					rhs = Type{ Type::INT,(long)rhs.mValue.mFloat };
-				if (lhs.mObjecttype == Type::FLOAT)
-					lhs = Type{ Type::INT,(long)rhs.mValue.mFloat };
+		Instruction("FADD", FADD, [this](VM&) {
 
-				stack.pop_back();
-				stack.pop_back();
-				stack.push_back(Type{ Type::INT,{ (long)(lhs.mValue.mInteger < rhs.mValue.mInteger) } });
-				stackPointer++;
-				break;
-			}
-			case IADD:
-				InstructionCode[opcode]->mInstruction(*this);
-				break;
-			case ISUB: {
-				auto rhs = stack[stackPointer--]; //Right-Hand-Side operand
-				auto lhs = stack[stackPointer--];   //Left-Hand-Side operand
-													//Implicit typecasting
-				if (rhs.mObjecttype == Type::FLOAT)
-					rhs = Type{ Type::INT,(long)rhs.mValue.mFloat };
-				if (lhs.mObjecttype == Type::FLOAT)
-					lhs = Type{ Type::INT,(long)rhs.mValue.mFloat };
-
-				stack.pop_back();
-				stack.pop_back();
-				stack.push_back(Type{ Type::INT,{ (lhs.mValue.mInteger - rhs.mValue.mInteger) } });
-				stackPointer++;
-				break;
-			}
-			case IMUL: {
-				auto rhs = stack[stackPointer--]; //Right-Hand-Side operand
-				auto lhs = stack[stackPointer--];   //Left-Hand-Side operand
-													//Implicit typecasting
-				if (rhs.mObjecttype == Type::FLOAT)
-					rhs = Type{ Type::INT,(long)rhs.mValue.mFloat };
-				if (lhs.mObjecttype == Type::FLOAT)
-					lhs = Type{ Type::INT,(long)rhs.mValue.mFloat };
-
-				stack.pop_back();
-				stack.pop_back();
-				stack.push_back(Type{ Type::INT,{ (lhs.mValue.mInteger*rhs.mValue.mInteger) } });
-				stackPointer++;
-				break;
-			}
-			case FADD: {
+			{
 				auto rhs = stack[stackPointer--]; //Right-Hand-Side operand
 				auto lhs = stack[stackPointer--];   //Left-Hand-Side operand
 													//Implicit typecasting
@@ -210,9 +131,13 @@ namespace vm
 				stack.pop_back();
 				stack.push_back(Type{ Type::FLOAT,{ (lhs.mValue.mFloat + rhs.mValue.mFloat) } });
 				stackPointer++;
-				break;
+				
 			}
-			case FSUB: {
+		
+		});
+		Instruction("FSUB", FSUB, [this](VM&) {
+
+			{
 				auto rhs = stack[stackPointer--]; //Right-Hand-Side operand
 				auto lhs = stack[stackPointer--];   //Left-Hand-Side operand
 													//Implicit typecasting
@@ -225,9 +150,13 @@ namespace vm
 				stack.pop_back();
 				stack.push_back(Type{ Type::FLOAT,{ (lhs.mValue.mFloat - rhs.mValue.mFloat) } });
 				stackPointer++;
-				break;
+
 			}
-			case FMUL: {
+
+		});
+		Instruction("FMUL", FMUL, [this](VM&) {
+
+			{
 				auto rhs = stack[stackPointer--]; //Right-Hand-Side operand
 				auto lhs = stack[stackPointer--];   //Left-Hand-Side operand
 													//Implicit typecasting
@@ -238,11 +167,15 @@ namespace vm
 
 				stack.pop_back();
 				stack.pop_back();
-				stack.push_back(Type{ Type::FLOAT,{ (lhs.mValue.mFloat*rhs.mValue.mFloat) } });
+				stack.push_back(Type{ Type::FLOAT,{ (lhs.mValue.mFloat * rhs.mValue.mFloat) } });
 				stackPointer++;
-				break;
+
 			}
-			case FEQ: {
+
+		});
+		Instruction("FEQ", FEQ, [this](VM&) {
+		
+			{
 				auto rhs = stack[stackPointer--]; //Right-Hand-Side operand
 				auto lhs = stack[stackPointer--];   //Left-Hand-Side operand
 													//Implicit typecasting
@@ -253,11 +186,15 @@ namespace vm
 
 				stack.pop_back();
 				stack.pop_back();
-				stack.push_back(Type{ Type::INT,{ (long)(lhs.mValue.mInteger == rhs.mValue.mInteger) } });
+				stack.push_back(Type{ Type::INT,{ (long long)(lhs.mValue.mInteger == rhs.mValue.mInteger) } });
 				stackPointer++;
-				break;
+				
 			}
-			case FLT: {
+		
+		});
+		Instruction("FLT", FLT, [this](VM&) {
+
+			{
 				auto rhs = stack[stackPointer--]; //Right-Hand-Side operand
 				auto lhs = stack[stackPointer--];   //Left-Hand-Side operand
 													//Implicit typecasting
@@ -268,31 +205,106 @@ namespace vm
 
 				stack.pop_back();
 				stack.pop_back();
-				stack.push_back(Type{ Type::INT,{ (long)(lhs.mValue.mInteger < rhs.mValue.mInteger) } });
+				stack.push_back(Type{ Type::INT,{ (long long)(lhs.mValue.mInteger < rhs.mValue.mInteger) } });
 				stackPointer++;
-				break;
+				
 			}
-			case POP: {
+
+		});
+
+		Instruction("FPUSH", FPUSH, 1, [this](VM&) {
+			{
+				auto value = this->code[instructionPointer].mValue.mFloat;
+				instructionPointer++;
+				stackPointer++;
+				stack.push_back(Type{ Type::FLOAT,{ value } });
+			}
+		});
+		Instruction("Print", PRINT, [this](VM&) {
+			{
+				std::cout << stack[stackPointer].mValue.mInteger << "\n";
 				stack.pop_back();
 				stackPointer--;
-				break;
 			}
-			case GSTORE: {
-				auto addr = code[instructionPointer++];
+		});
+		Instruction("HALT", HALT,[this](VM&)
+		{
+			this->~VM();
+			return;
+		});
+		Instruction("POP", POP,  [this](VM&) {
+		    {
+				stack.pop_back();
+				stackPointer--;
+			}
+		
+		});
+
+		Instruction("GSTORE", GSTORE, 1, [this](VM&) {
+			{
+				auto addr = this->code[instructionPointer++];
 				globals[addr.mValue.mInteger] = stack[stackPointer--];
 				stack.pop_back();
-				break;
 			}
-			case GLOAD: {
-				auto addr = code[instructionPointer++];
+		
+		});
+		Instruction("GLOAD", GLOAD, 1, [this](VM&) {
+			{
+				auto addr =this-> code[instructionPointer++];
 				auto val = globals[addr.mValue.mInteger];
 				stack.push_back(val);
 				stackPointer++;
-				break;
 			}
-			case CALL: {
-				auto func = code[instructionPointer++];
-				auto nargs = code[instructionPointer++];
+		});
+		Instruction("STORE", STORE, 1, [this](VM&) {
+			{
+				auto offset = this->code[instructionPointer++];
+				stack[framePointer + offset.mValue.mInteger] = popOffStack();
+			}
+		});
+		Instruction("LOAD", LOAD, 1, [this](VM&) {
+			{
+				auto offset = this->code[instructionPointer++];
+				if (offset.mObjecttype == Type::FLOAT)
+					offset = Type{ Type::FLOAT,(long long)offset.mValue.mFloat };
+
+				pushOntoStack(stack[framePointer + offset.mValue.mInteger]);
+			}
+		});
+
+		Instruction("BRANCH", BRANCH, 1, [this](VM&) {
+			{
+				auto addr = this->code[instructionPointer++];
+				if (addr.mObjecttype != Type::POINTER)
+					throw std::runtime_error("INSTR: BRANCH -> Expected Pointer rececived [" + std::to_string(addr.mObjecttype) + "]");
+				instructionPointer = addr.mValue.mPointer;
+				
+			}
+		});
+		Instruction("BRTRUE", BRTRUE, 1,[this](VM&) {
+			{
+				auto addr = this->code[instructionPointer++];
+				if (addr.mObjecttype != Type::POINTER)
+					throw std::runtime_error("INSTR: BRTRUE -> Expected Pointer rececived [ " + std::to_string(addr.mObjecttype) + " ]");
+				if (static_cast<bool>(popOffStack().mValue.mInteger) == true) // Check if the condition to branch is TRUE and toss value away afterwards
+					instructionPointer = addr.mValue.mPointer;
+				
+			}
+		});
+		Instruction("BRFALSE", BRFALSE, 1, [this](VM&) {
+			{
+				auto addr = this->code[instructionPointer++];
+				if (addr.mObjecttype != Type::POINTER)
+					throw std::runtime_error("INSTR: BRTRUE -> Expected Pointer rececived [ " + std::to_string(addr.mObjecttype) + " ]");
+				if (static_cast<bool>(popOffStack().mValue.mInteger) == false) // Check if the condition to branch is TRUE and toss value away afterwards
+					instructionPointer = addr.mValue.mPointer;
+
+			}
+		});
+		Instruction("CALL", CALL, 2, [this](VM&) {
+			{
+				auto func = this->code[instructionPointer++];
+				auto nargs = this->code[instructionPointer++];
 
 				if (func.mObjecttype != Type::POINTER)
 					throw std::runtime_error("INSTR: CALL -> operand is not an Pointer to an Object/Function!!!");
@@ -304,11 +316,10 @@ namespace vm
 
 				framePointer = stackPointer;
 				instructionPointer = func.mValue.mPointer;	// Set InstructionPointer to the functions address
-
-
-				break;
 			}
-			case RET: {
+		});
+		Instruction("RET", RET, [this](VM&) {
+			{
 				auto retVal = popOffStack();		// return value of the function
 				stackPointer = static_cast<long>(framePointer);		//// jump over locals to fp which points at ret addr
 
@@ -323,63 +334,43 @@ namespace vm
 					popOffStack();
 
 				pushOntoStack(retVal); // leave the return Value on the stack
+			}
+		});
+	}
+
+	void VM::cpu()
+	{
+		if (trace)
+			std::cout << std::left << std::setw(44) << "Instruction & Results:" << std::right << "Stack Memory:\n";
+		while (instructionPointer <= code.size())
+		{
+			auto opcode = code[instructionPointer].mValue.mInteger; // fetch OpCode
+
+			if (trace) {
+				std::cout << std::left << std::setw(40) << disassemble() << std::right
+					<< stackString() << "\n";
+				//auto avg = (measure<std::chrono::nanoseconds>::duration(InstructionCode[opcode]->mInstruction, *this));
+				//std::cerr << "--->>" << avg.count() << "\n";
+			}
 
 
-				break;
-			}
-			case BRANCH: {
-				auto addr = code[instructionPointer++];
-				if (addr.mObjecttype != Type::POINTER)
-					throw std::runtime_error("INSTR: BRANCH -> Expected Pointer rececived [" + std::to_string(addr.mObjecttype) + "]");
-				instructionPointer = addr.mValue.mPointer;
-				break;
-			}
-			case BRTRUE: {
-				auto addr = code[instructionPointer++];
-				if (addr.mObjecttype != Type::POINTER)
-					throw std::runtime_error("INSTR: BRTRUE -> Expected Pointer rececived [ " + std::to_string(addr.mObjecttype) + " ]");
-				if (static_cast<bool>(popOffStack().mValue.mInteger) == true) // Check if the condition to branch is TRUE and toss value away afterwards
-					instructionPointer = addr.mValue.mPointer;
-				break;
-			}
-			case BRFALSE: {
-				auto addr = code[instructionPointer++];
-				if (addr.mObjecttype != Type::POINTER)
-					throw std::runtime_error("INSTR: BRFALSE -> Expected Pointer rececived [" + std::to_string(addr.mObjecttype) + "]");
-				if (static_cast<bool>(popOffStack().mValue.mInteger) == false) // Check if the condition to branch is FALSE and toss value away afterwards
-					instructionPointer = addr.mValue.mPointer;
-				break;
-			}
-			case LOAD: {
-				auto offset = code[instructionPointer++];
-				if (offset.mObjecttype == Type::FLOAT)
-					offset = Type{ Type::FLOAT,(int)offset.mValue.mFloat };
+			instructionPointer++;
 
-				pushOntoStack(stack[framePointer + offset.mValue.mInteger]);
-				break;
-			}
-			case STORE: {
-				auto offset = code[instructionPointer++];
-				stack[framePointer + offset.mValue.mInteger] = popOffStack();
-				break;
-			}
+			/*if (opcode < MAXCODE)
+				if (opcode < 0)
+					throw std::runtime_error("Opcode Mismatch No Negative instructions please ");
+			throw std::runtime_error("Opcode not implemented yet: "
+				+ InstructionCode[opcode]->mName
+				+ "! at Instruction Pointer("
+				+ std::to_string(instructionPointer - 1) + ").");
+			throw std::runtime_error("Opcode not supported: "
+				+ std::to_string(opcode)
+				+ "! at Instruction Pointer("
+				+ std::to_string(instructionPointer - 1) + ").");*/
 
-			case HALT:
-				return;
-			default: {
-				if (opcode < MAXCODE)
-					if (opcode < 0)
-						throw std::runtime_error("Opcode Mismatch No Negative instructions please ");
-				throw std::runtime_error("Opcode not implemented yet: "
-					+ InstructionCode[opcode]->mName
-					+ "! at Instruction Pointer("
-					+ std::to_string(instructionPointer - 1) + ").");
-				throw std::runtime_error("Opcode not supported: "
-					+ std::to_string(opcode)
-					+ "! at Instruction Pointer("
-					+ std::to_string(instructionPointer - 1) + ").");
-			}
-			}
+			
+			InstructionCode[opcode]->mInstruction(*this);
+			
 		}
 	}
 

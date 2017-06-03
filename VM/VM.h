@@ -6,14 +6,14 @@
 #define UTILITY_VM_H
 #include <vector>
 
-#define INSTR(CODE,VAL,TYPE) Type{vm::VM::Type::INT,	{CODE}	}, \
+#define INSTR(CODE,VAL,TYPE) Type{vm::VM::Type::INT,	{(long long)CODE}	}, \
 							 Type{vm::VM::Type::TYPE,	{VAL}	}
-#define DINSTR(CODE,VAL1,VAL2,TYPE1,TYPE2) Type{vm::VM::Type::INT,		{CODE}	},\
+#define DINSTR(CODE,VAL1,VAL2,TYPE1,TYPE2) Type{vm::VM::Type::INT,		{(long long)CODE}	},\
 										   Type{vm::VM::Type::TYPE1,	{VAL1}	},\
 										   Type{vm::VM::Type::TYPE2,	{VAL2}	}
 
-#define SINSTR(CODE) Type{vm::VM::Type::INT,{CODE}}
-#define PINSTR(CODE) Type{vm::VM::Type::INT,{CODE}}
+#define SINSTR(CODE) Type{vm::VM::Type::INT,{(long long)CODE}}
+#define PINSTR(CODE) Type{vm::VM::Type::INT,{(long long)CODE}}
 
 namespace vm
 {
@@ -21,16 +21,17 @@ namespace vm
 	{
 	public:
 		struct Type {
-			enum types { INT, POINTER, FLOAT, STRING, CHAR } mObjecttype;
+			enum types  { INT, POINTER, FLOAT, STRING, CHAR } mObjecttype;
 
 			union Value {
-				long  mInteger;
+				long long  mInteger;
 				size_t mPointer;
 				char mCharacter;
 				double mFloat;
 				char* mString;
+
 				Value() = default;
-				Value(int  i) : mInteger(i) {};
+				Value(long long  i) : mInteger(i) {};
 				Value(size_t i) : mPointer(i) {};
 				Value(char c) : mCharacter(c) {};
 				Value(double f) : mFloat(f) {};
