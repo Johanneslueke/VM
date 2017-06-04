@@ -17,6 +17,7 @@
 #define SINSTR(CODE) Type{vm::VM::Type::INT,{(long long)CODE}}
 #define PINSTR(CODE) Type{vm::VM::Type::INT,{(long long)CODE}}
 
+#include "Measurement.h"
 namespace vm
 {
 	class VM
@@ -54,16 +55,17 @@ namespace vm
 		};
 	public:
 		typedef std::vector<Type> Memory;
-	public:
+	private:
 		Memory        globals;
 		Memory        stack;
 		Memory        code;
+		Statistics	  stats;
 
 		size_t                     instructionPointer = -1;
 		long                       stackPointer = -1;
 		size_t                     framePointer = -1;
 
-		bool                    trace = true;
+		bool                    trace = false;
 
 		
 		void	pushOntoStack(Type T);
@@ -86,6 +88,8 @@ namespace vm
 
 		std::string disassemble() const;
 		std::string stackString() const;
+
+		void doStats() const;
 
 
 	};

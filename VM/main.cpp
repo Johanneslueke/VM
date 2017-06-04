@@ -61,9 +61,9 @@ int main() {
 		SINSTR(RET),						// [21]		Return Result[20]
 		/// Function Main()					// ARGS=0, LOCALS=0
 		//									 <-- MAIN METHOD!
-		INSTR(IPUSH, 5ll,INT),				// [22]		Push Constant (5) Onto StacK
+		INSTR(IPUSH, 25ll,INT),				// [22]		Push Constant (5) Onto StacK
 		DINSTR(CALL, 0ull, 1ll,POINTER,INT),	// [25]		Call Function: factorial(var N)
-		SINSTR(PRINT),						// [26]		Print Stack Top
+		//SINSTR(PRINT),						// [26]		Print Stack Top
 		SINSTR(HALT)						// [27]		Abort
 	};
 
@@ -83,10 +83,9 @@ int main() {
 
 
 
-
 		std::cout << "Average Time: " << avg.count() << " ns\n";
 		std::cout << "Average Time: " << avg2.count() << " ns\n";
-		std::cout << "Delta Time: " << (avg - avg2).count()/std::pow(10,6)<<"ms\n";
+		std::cout << "Delta Time: " << (avg - avg2).count()/std::pow(10,6)<<"us\n";
 
 		//Machine.cpu();
 	}

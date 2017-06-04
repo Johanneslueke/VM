@@ -7,9 +7,10 @@
 
 #include "ByteCode.h"
 
+
 #include "VM.h"
 
-#include "Measurement.h"
+
 
 namespace vm
 {
@@ -229,6 +230,7 @@ namespace vm
 		});
 		Instruction("HALT", HALT,[this](VM&)
 		{
+			this->stats.doStats();;
 			this->~VM();
 			return;
 		});
@@ -345,8 +347,7 @@ namespace vm
 		while (instructionPointer <= code.size())
 		{
 			auto opcode = code[instructionPointer].mValue.mInteger; // fetch OpCode
-			instructionPointer++;
-			
+			instructionPointer++;		
 
 			if (opcode < 0)
 				throw std::runtime_error("Opcode Mismatch No Negative instructions please ");
@@ -361,13 +362,15 @@ namespace vm
 				std::cout << std::left << std::setw(40) << disassemble() << std::right
 					<< stackString() << "\n";
 				auto avg = (measure<std::chrono::nanoseconds>::duration(InstructionCode[opcode]->mInstruction, *this));
-				std::cerr << "--->>" << avg.count() << "\n";
+				
+				stats.AddMeasurement({ InstructionCode[opcode]->mName, avg.count() });
 			}
 			else {
-				InstructionCode[opcode]->mInstruction(*this);
+				stats.AddMeasurement({ InstructionCode[opcode]->mName,  (measure<std::chrono::nanoseconds>::duration(InstructionCode[opcode]->mInstruction, *this)).count() });
 			}	
 		}
 	}
+
 
 	std::string VM::disassemble() const {
 		std::stringstream buffer;
