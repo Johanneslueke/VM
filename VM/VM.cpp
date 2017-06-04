@@ -14,7 +14,8 @@
 
 namespace vm
 {
-	VM::VM(const std::vector<Type>& code, int main) : globals(1000)
+	VM::VM(const std::vector<Type>& code, int main) : globals(1000),
+		heap(std::make_unique<char[]>(HeapSize()))	
 	{
 		this->code = code;
 		this->instructionPointer = main;
@@ -22,65 +23,82 @@ namespace vm
 		Instruction::Init(this);
 	}
 
+	VM::~VM() {
+		
+	}
+
 	void VM::cpu()
 	{
 		if (trace)
 			std::cout << std::left << std::setw(44) << "Instruction & Results:" << std::right << "Stack Memory:\n";
-		while (instructionPointer <= code.size())
+
+		while (instructionPointer < code.size())
 		{
-			auto opcode = code[instructionPointer].mValue.mInteger; // fetch OpCode
-			instructionPointer++;		
+			try {
+				auto opcode = code[instructionPointer].mValue.mValue; // fetch OpCode
+				instructionPointer++;
 
-			if (opcode < 0)
-				throw std::runtime_error("Opcode Mismatch No Negative instructions please ");
-			else if(opcode > MAXCODE)
-				throw std::runtime_error("Opcode not supported: "
-					+ std::to_string(opcode)
-					+ "! at Instruction Pointer("
-					+ std::to_string(instructionPointer - 1) + ").");
-			
+				if (opcode < 0)
+					throw std::runtime_error("Opcode Mismatch No Negative instructions please ");
+				else if (opcode > MAXCODE)
+					throw std::runtime_error("Opcode not supported: "
+						+ std::to_string(opcode)
+						+ "! at Instruction Pointer("
+						+ std::to_string(instructionPointer - 1) + ").");
 
-			if (trace) {
-				std::cout << std::left << std::setw(40) << disassemble() << std::right
-					<< stackString() << "\n";
-				auto avg = (measure<std::chrono::nanoseconds>::duration(InstructionCode[opcode]->mInstruction));
-				
-				stats.AddMeasurement({ InstructionCode[opcode]->mName, avg.count() });
+
+				if (trace) {
+					std::cout << std::left << std::setw(40) << disassemble() << std::right
+						<< stackString() << "\n";
+					auto avg = (measure<std::chrono::nanoseconds>::duration(InstructionCode[static_cast<size_t>(opcode)]->mInstruction));
+
+					stats.AddMeasurement({ InstructionCode[static_cast<size_t>(opcode)]->mName, avg.count() });
+				}
+				else {
+					stats.AddMeasurement({ InstructionCode[static_cast<size_t>(opcode)]->mName,  (measure<std::chrono::nanoseconds>::duration(InstructionCode[static_cast<size_t>(opcode)]->mInstruction)).count() });
+				}
 			}
-			else {
-				stats.AddMeasurement({ InstructionCode[opcode]->mName,  (measure<std::chrono::nanoseconds>::duration(InstructionCode[opcode]->mInstruction)).count() });
-			}	
+			catch (std::out_of_range& e)
+			{
+				std::cerr << e.what();
+			}
+			catch (std::exception& e)
+			{
+				std::cerr << e.what();
+			}
+			catch (...)
+			{
+				std::cerr << "Totally lost... do not know what happend but i'm dead for now!!!\n";
+			}
+			
+				
 		}
+
 	}
 
 
 	std::string VM::disassemble() const {
 		std::stringstream buffer;
-		int opcode = code[instructionPointer-1].mValue.mInteger;
+		auto opcode = code[instructionPointer-1].mValue.mValue;
 		if (opcode != 0 && opcode < MAXCODE) //Print Code section
 		{
 			buffer << std::showbase << std::setbase(10)
 				<< std::setw(4 * 2) << std::left << instructionPointer << std::dec << ": \t"
-				<< std::setw(4 * 2) << std::left << InstructionCode[opcode]->mName;
+				<< std::setw(4 * 2) << std::left << InstructionCode[static_cast<size_t>(opcode)]->mName;
 
-			if (InstructionCode[opcode]->mOperandCount > 0) {
-				auto nargs = InstructionCode[opcode]->mOperandCount;
+			if (InstructionCode[static_cast<size_t>(opcode)]->mOperandCount > 0) {
+				auto nargs = InstructionCode[static_cast<size_t>(opcode)]->mOperandCount;
 				std::vector<std::string> operands;
 				for (auto i = instructionPointer + 1; i <= instructionPointer + nargs; i++)
 				{
 					switch (code[i].mObjecttype)
 					{
-					case Type::INT:
-						operands.push_back(std::to_string(code[i].mValue.mInteger));
-						break;
+					
 					case Type::POINTER:
 						operands.push_back(std::to_string(code[i].mValue.mPointer));
 						break;
-					case Type::FLOAT:
-						operands.push_back(std::to_string(code[i].mValue.mFloat));
-						break;
-					case Type::STRING:
-						operands.push_back({ code[i].mValue.mString });
+					default:
+						operands.push_back(std::to_string((int)code[i].mValue.mValue));
 						break;
 					}
 				}
@@ -105,13 +123,10 @@ namespace vm
 			switch (stack[i].mObjecttype)
 			{
 			case Type::INT:
-				buffer << " " << stack[i].mValue.mInteger;
+				buffer << " " << (long long)stack[i].mValue.mValue;
 				break;
 			case Type::FLOAT:
-				buffer << " " << stack[i].mValue.mFloat;
-				break;
-			case Type::STRING:
-				buffer << " " << stack[i].mValue.mString;
+				buffer << " " << stack[i].mValue.mValue;
 				break;
 			}
 

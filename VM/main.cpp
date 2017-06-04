@@ -23,18 +23,18 @@ int main() {
 	Type CodeLoop[] = {
 								
 	   // N = 10						ADDRESS
-		INSTR(IPUSH, 10LL,INT),			// 0  Push Constant (10) Onto Stack 
-		INSTR(GSTORE, 0LL,INT),			// 2  Store StackTop{Constant (10)} Globally var(N)								 
-		INSTR(IPUSH, 0LL,INT),			// 4  Push Constant (0) Onto Stack
-		INSTR(GSTORE, 1LL,INT),			// 6  Store StackTop{Constant (10)} Globally var(i)
+		INSTR(IPUSH, (double)10.0,INT),			// 0  Push Constant (10) Onto Stack 
+		INSTR(GSTORE, 0ull,POINTER),			// 2  Store StackTop{Constant (10)} Globally var(N)								 
+		INSTR(IPUSH, 0.0,INT),			// 4  Push Constant (0) Onto Stack
+		INSTR(GSTORE, 1ull,INT),			// 6  Store StackTop{Constant (10)} Globally var(i)
 										// do{
-		INSTR(GLOAD, 1ll,INT),			// 15 Load i
-		INSTR(IPUSH, 1ll,INT),			// 17 Push Constant (1) Onto Stack 
+		INSTR(GLOAD, 1ull,POINTER),			// 15 Load i
+		INSTR(IPUSH, 1.0,INT),			// 17 Push Constant (1) Onto Stack 
 		SINSTR(IADD),					// 19 i = i+1
-		INSTR(GSTORE, 1ll,INT),
+		INSTR(GSTORE, 1ull,POINTER),
 										// }while( i < N)
-		INSTR(GLOAD, 1ll,INT),			// 20
-		INSTR(GLOAD, 0ll,INT)	,			// 22
+		INSTR(GLOAD, 1ull,POINTER),			// 20
+		INSTR(GLOAD, 0ull,POINTER)	,			// 22
 		SINSTR(ILT),					// 24
 		INSTR(BRTRUE, 8ull,POINTER),		// 25;
 										
@@ -44,26 +44,26 @@ int main() {
 	Type factorial[] = {
 		//Instruction						// ADDRESS
 		///Function factorial(var N)		// ARGS=1, LOCALS=0		
-		INSTR(LOAD, -3ll,INT),				// [0]		Copy Given Argument N Into Current StackFrame
-		INSTR(IPUSH, 2ll,INT),				// [2]		Push Constant (2) Onto Stack
+		INSTR(LOAD, -3.0,INT),				// [0]		Copy Given Argument N Into Current StackFrame
+		INSTR(IPUSH, 2.0,INT),				// [2]		Push Constant (2) Onto Stack
 		SINSTR(ILT),						// [4]		IF ((N < 2) == TRUE) Push TRUE ELSE Push FALSE Onto Stack
 		INSTR(BRFALSE, 10ull,POINTER),		// [5]		Jump to Addr 10 if on Stack lays FALSE
-		INSTR(IPUSH, 1ll,INT),				// [7]		Push Constant (1) Onto Stack
+		INSTR(IPUSH, 1.0,INT),				// [7]		Push Constant (1) Onto Stack
 		SINSTR(RET),						// [9]		Return Constant (1)[7]
 											// 
 											//			RETURN N * factorial( N-1 )
-		INSTR(LOAD, -3ll,INT),				// [10]		Copy Given Argument N Into Current StackFrame
-		INSTR(LOAD, -3ll,INT),				// [12]		Copy Given Argument N Into Current StackFrame
-		INSTR(IPUSH, 1ll,INT),				// [14]		Push Constant (1) Onto Stack
+		INSTR(LOAD, -3.0,INT),				// [10]		Copy Given Argument N Into Current StackFrame
+		INSTR(LOAD, -3.0,INT),				// [12]		Copy Given Argument N Into Current StackFrame
+		INSTR(IPUSH, 1.0,INT),				// [14]		Push Constant (1) Onto Stack
 		SINSTR(ISUB),						// [16]		Substract Constant (1) of Value (N) 
-		DINSTR(CALL, 0ull, 1ll,POINTER,INT),	// [17]		Call Function: factorial(var N)
+		DINSTR(CALL, 0ull, 1.0,POINTER,INT),	// [17]		Call Function: factorial(var N)
 		SINSTR(IMUL),						// [20]		Multiplicate Result of (factorial(var N))[17] times Value (N)[10]
 		SINSTR(RET),						// [21]		Return Result[20]
 		/// Function Main()					// ARGS=0, LOCALS=0
 		//									 <-- MAIN METHOD!
-		INSTR(IPUSH, 25ll,INT),				// [22]		Push Constant (5) Onto StacK
-		DINSTR(CALL, 0ull, 1ll,POINTER,INT),	// [25]		Call Function: factorial(var N)
-		//SINSTR(PRINT),						// [26]		Print Stack Top
+		INSTR(IPUSH, 5.0,INT),				// [22]		Push Constant (5) Onto StacK
+		DINSTR(CALL, 0ull, 1.0,POINTER,INT),	// [25]		Call Function: factorial(var N)
+	    SINSTR(PRINT),						// [26]		Print Stack Top
 		SINSTR(HALT)						// [27]		Abort
 	};
 
@@ -79,7 +79,7 @@ int main() {
 		///auto exe = &VM::cpu;
 		auto avg = (measure<std::chrono::nanoseconds>::duration(Machine) );
 
-		auto avg2 = (measure<std::chrono::nanoseconds>::duration(test,25));
+		auto avg2 = (measure<std::chrono::nanoseconds>::duration(test,5));
 
 
 

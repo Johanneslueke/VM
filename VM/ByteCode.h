@@ -12,7 +12,7 @@ namespace vm
 
 	class VM;
 
-	enum ByteCodes : long {
+	enum ByteCodes : unsigned long long {
 		IADD = 1,
 		ISUB,
 		IMUL,
