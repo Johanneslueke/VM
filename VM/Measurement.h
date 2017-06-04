@@ -92,8 +92,11 @@ public:
 	{
 		std::cout << "\n\n";
 		std::cout << "Name\t---> \t Min\t\t Max\t\t Average\t Sum\n";
-		std::cout << "----------------------------------------------------------------------------\n";
-		long double SumSum = 0;
+		std::cout << "---------------------------------------------------------------------------------\n";
+		long double SumSum = 0, _Avg = 0;;
+		long long _Min = 0,
+			_Max = 0
+			;
 		for (int i = 1; i < vm::MAXCODE - 1; i++)
 		{
 			std::stringstream					buffer;
@@ -126,9 +129,12 @@ public:
 			std::cout << std::right<< vm::InstructionCode[i]->mName << "\t---> [\t " << Min  << "ns,\t " << Max << "ns,\t " << Average << "ns,\t " << Sum  << "ns\t]\n";
 			this->mResults.push_back(buffer.str());
 			SumSum += Sum;
+			_Min += Min;
+			_Max += Max;
+			_Avg += Average;
 		}
-		std::cout << "----------------------------------------------------------------------------\n";
-		std::cout <<"Sum\t\t\t\t\t\t\t\t "<< SumSum*std::pow(10,-6)<<" ms\n\n";
+		std::cout << "---------------------------------------------------------------------------------\n";
+		std::cout <<"Sum\t\t "<<_Min*std::pow(10, -6) <<"ms\t "<<_Max*std::pow(10, -6) <<"ms\t "<<_Avg*std::pow(10, -6) <<"ms\t "<< SumSum*std::pow(10,-6)<<" ms\n\n";
 		
 	}
 

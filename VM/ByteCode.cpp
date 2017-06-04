@@ -117,8 +117,6 @@ namespace vm
 		});
 
 		Instruction("FADD", FADD, [Machine]() {
-
-			{
 				auto rhs = Machine->stack[Machine->stackPointer--]; //Right-Hand-Side operand
 				auto lhs = Machine->stack[Machine->stackPointer--];   //Left-Hand-Side operand
 	
@@ -127,9 +125,6 @@ namespace vm
 				Machine->stack.pop_back();
 				Machine->stack.push_back(VM::Type{ VM::Type::FLOAT,{ (lhs.mValue.mValue + rhs.mValue.mValue) } });
 				Machine->stackPointer++;
-
-			}
-
 		});
 		Instruction("FSUB", FSUB, [Machine]() {
 

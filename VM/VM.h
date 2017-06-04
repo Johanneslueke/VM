@@ -83,7 +83,7 @@ namespace vm
 		long                       stackPointer = -1;
 		size_t                     framePointer = -1;
 
-		bool					   trace = false;
+		bool					   trace = true;
 
 		
 		void	pushOntoStack(Type T);

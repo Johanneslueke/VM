@@ -35,7 +35,7 @@ namespace vm
 		while (instructionPointer < code.size())
 		{
 			try {
-				auto opcode = code[instructionPointer].mValue.mValue; // fetch OpCode
+				auto opcode = static_cast<size_t>(code[instructionPointer ].mValue.mValue);// fetch OpCode
 				instructionPointer++;
 
 				if (opcode < 0)
@@ -45,6 +45,8 @@ namespace vm
 						+ std::to_string(opcode)
 						+ "! at Instruction Pointer("
 						+ std::to_string(instructionPointer - 1) + ").");
+				else if(opcode == 0)
+					throw std::runtime_error("Opcode 0 Does not exist!\n ");
 
 
 				if (trace) {
@@ -79,11 +81,11 @@ namespace vm
 
 	std::string VM::disassemble() const {
 		std::stringstream buffer;
-		auto opcode = code[instructionPointer-1].mValue.mValue;
+		auto opcode = static_cast<size_t>(code[instructionPointer - 1].mValue.mValue);
 		if (opcode != 0 && opcode < MAXCODE) //Print Code section
 		{
 			buffer << std::showbase << std::setbase(10)
-				<< std::setw(4 * 2) << std::left << instructionPointer << std::dec << ": \t"
+				<< std::setw(4 * 2) << std::left << instructionPointer-1 << std::dec << ": \t"
 				<< std::setw(4 * 2) << std::left << InstructionCode[static_cast<size_t>(opcode)]->mName;
 
 			if (InstructionCode[static_cast<size_t>(opcode)]->mOperandCount > 0) {
@@ -98,7 +100,7 @@ namespace vm
 						operands.push_back(std::to_string(code[i].mValue.mPointer));
 						break;
 					default:
-						operands.push_back(std::to_string((int)code[i].mValue.mValue));
+						operands.push_back(std::to_string(code[i].mValue.mValue));
 						break;
 					}
 				}
