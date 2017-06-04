@@ -120,6 +120,7 @@
   <ItemGroup>
     <ClInclude Include="ByteCode.h" />
     <ClInclude Include="ByteCodeFileReader.h" />
+    <ClInclude Include="Measurement.h" />
     <ClInclude Include="VM.h" />
   </ItemGroup>
   <ItemGroup>
