@@ -55,7 +55,7 @@ namespace vm
 		};
 	public:
 		typedef std::vector<Type> Memory;
-	private:
+	public:
 		Memory        globals;
 		Memory        stack;
 		Memory        code;
@@ -89,7 +89,6 @@ namespace vm
 		std::string disassemble() const;
 		std::string stackString() const;
 
-		void doStats() const;
 
 
 	};

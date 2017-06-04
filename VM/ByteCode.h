@@ -46,14 +46,17 @@ namespace vm
 		std::string mName;
 		int         mNumericName;
 		int         mOperandCount;
-		std::function<void(VM&)>	mInstruction;
+		std::function<void()>	mInstruction;
 
 		Instruction(const std::string& OpCode, int Value, int operands);
 		Instruction(const std::string& OpCode, int Value);
-		Instruction(const std::string& OpCode, int Value, int operands, std::function<void(VM&)> lambda);
-		Instruction(const std::string& OpCode, int Value, std::function<void(VM&)> lambda);
+		Instruction(const std::string& OpCode, int Value, int operands, std::function<void()> lambda);
+		Instruction(const std::string& OpCode, int Value, std::function<void()> lambda);
 
 		virtual ~Instruction() = default;
+
+
+		static void Init( VM*);
 		
 	};
 
