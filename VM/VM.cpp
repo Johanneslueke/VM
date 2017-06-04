@@ -438,7 +438,7 @@ namespace vm
 		return buffer.str();
 	}
 
-	void	VM::pushOntoStack(Type T)
+	void VM::pushOntoStack(Type T)
 	{
 		stack.push_back(T);
 		stackPointer++;

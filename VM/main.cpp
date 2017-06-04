@@ -83,9 +83,9 @@ int main() {
 
 
 
-		std::cout << "Average Time: " << avg.count() << " ns\n";
-		std::cout << "Average Time: " << avg2.count() << " ns\n";
-		std::cout << "Delta Time: " << (avg - avg2).count()/std::pow(10,6)<<"us\n";
+		std::cout << "Average Time: " << avg.count() * std::pow(10, -6) << " ms\n";
+		std::cout << "Average Time: " << avg2.count()* std::pow(10, -6) << " ms\n";
+		std::cout << "Delta Time: " << (avg - avg2).count() * std::pow(10,-6)<<"ms\n";
 
 		//Machine.cpu();
 	}

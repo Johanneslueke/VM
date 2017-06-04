@@ -97,7 +97,7 @@ public:
 		for (int i = 1; i < vm::MAXCODE - 1; i++)
 		{
 			std::stringstream					buffer;
-			long long Min=100000000, Max=0, Sum=0;
+			long long Min = std::numeric_limits<long long>::max() , Max = std::numeric_limits<long long>::min(), Sum = 0;
 			long double Average = 0.0f;
 			size_t	count = 0;
 			bool used = false;
@@ -115,7 +115,11 @@ public:
 					count++;
 				}
 			}
-			if (!used) continue;
+			if (!used)
+			{
+				Min = 0, Max = 0, Sum = 0, Average = 0.0f, count = 0;
+				continue;
+			}
 
 			Average = ((long double)Sum) / count;
 			//buffer << vm::InstructionCode[i]->mName << "\t---> [\t " << Min << "ns, " << Max << ", " << Average << ", "<<Sum <<"]\n";
@@ -123,8 +127,8 @@ public:
 			this->mResults.push_back(buffer.str());
 			SumSum += Sum;
 		}
-
-		std::cout <<"Sum\t\t\t\t\t\t\t\t "<< SumSum/std::pow(10,6)<<"us\n";
+		std::cout << "----------------------------------------------------------------------------\n";
+		std::cout <<"Sum\t\t\t\t\t\t\t\t "<< SumSum*std::pow(10,-6)<<" ms\n\n";
 		
 	}
 
