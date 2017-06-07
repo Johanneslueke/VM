@@ -42,7 +42,7 @@ namespace vm
 
 	void Instruction::Init( VM* Machine)
 	{
-		InstructionCode[0] = nullptr;
+		Instruction("NOP", 0, []() {});
 		Instruction("IADD", IADD, [Machine]( ) {
 
 			auto rhs = Machine->stack[Machine->stackPointer--];	//Right-Hand-Side operand

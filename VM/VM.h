@@ -23,16 +23,6 @@
 #define Gigabytes(Value) (Megabytes(Value)*1024ULL)
 #define Terabytes(Value) (Gigabytes(Value)*1024ULL)
 
-template<typename ArrayType>
-struct deleter {
-	void operator()(ArrayType* array) {
-		if (array)
-		{
-			delete[] array;
-			array = nullptr;
-		}
-	}
-};
 
 
 #include "Measurement.h"
@@ -68,31 +58,41 @@ namespace vm
 
 
 	public:
-		typedef std::vector<Type> Memory;
-		typedef std::unique_ptr<char[]>			  HeapMemory;
-
+		typedef std::vector<Type>				  Memory;		
+		typedef std::unique_ptr<char[]>			  HeapMemory;	
 		
 
 	private:
-		friend Instruction;			//<-- Ugly but it works, to my surprise
-		Memory        globals;
-		Memory        stack;
-		Memory        code;
-		HeapMemory	  heap;
-		Statistics	  stats;
+		friend		  Instruction;			//<-- Ugly but it works, to my surprise
 
+		//Memory of the Machine
+		HeapMemory	  heap;	
+		Memory        stack;
+		Memory        globals;
+
+			
+		Memory        code;					//!<-- Copy of the Code to execute
+		Statistics	  stats;				//!<-- Does Statistics about the execution of the Code
+
+
+		//Rudimentary special purpose register 
 		size_t                     instructionPointer = -1;
-		long                       stackPointer = -1;
+		size_t                     stackPointer = -1;
 		size_t                     framePointer = -1;
 
+		//Debug
 		bool					   trace = false;
 
-		
+	protected:
+
 		void	pushOntoStack(Type T);
 		Type	popOffStack();
 		size_t	popPointer();
 
 		size_t  HeapSize() const { return Kilobytes(512); }
+
+		std::string disassemble() const;
+		std::string stackString() const;
 		
 
 	public:
@@ -108,8 +108,7 @@ namespace vm
 		}
 
 
-		std::string disassemble() const;
-		std::string stackString() const;
+		
 
 
 

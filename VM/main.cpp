@@ -12,7 +12,7 @@ using Type = vm::VM::Type;
 
 #include "Measurement.h"
 
-#define N 30.0
+#define N 5.0
 
 long long test(long double n);
 
@@ -188,7 +188,7 @@ int main() {
 
 	try {
 		///auto exe = &VM::cpu;
-		//auto avg = (measure<std::chrono::nanoseconds>::duration(Machine) );
+		auto avg = (measure<std::chrono::nanoseconds>::duration(Machine) );
 
 		//auto avg2 = (measure<std::chrono::nanoseconds>::duration(test,N));
 
