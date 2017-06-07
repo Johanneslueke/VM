@@ -30,40 +30,74 @@ namespace vm
 				mFileContent.put(ByteCodeFile.get());
 		}
 
+		void parseHumanReadable()
+		{
+			if (mIsHumanReadable)
+			{
+				VM::Memory  code;
+				std::string buffer;
+				while (!mFileContent.eof())
+				{
+					char ch = mFileContent.get();
+					if (ch != ' ' || ch != '\n')
+					{
+						buffer += ch;
+					}
+					else
+					{
+						for (auto& i : InstructionCode)
+						{
+							if (i.mName == buffer)
+							{
+								code.emplace_back({ VM::Type::INT,{ static_cast<double>(i.mNumericName) } });
+							}
+						}
+					}
+				}
+			}
+			*this();
+		}
 
-		VM::Memory operator()()
+
+		VM::Memory operator()() // MEh don'T like that--- does not look neet. there must be a different way
 		{
 			std::string token;
 			VM::Memory  code;
 
 			while (!mFileContent.eof())
 			{
-				mFileContent >> token;
+				char byte = static_cast<char>(mFileContent.get());
 
-				if (mIsHumanReadable)
+				switch (byte)
 				{
-					if (isNumber(token))
-					{
+				case IPUSH:
+				case GSTORE:
+				case GLOAD:
+				case LOAD:
+				case STORE:
+				case BRANCH:
+				case BRTRUE:
+				case BRFALSE:
+					code.emplace_back({ VM::Type::INT,{ static_cast<double>(byte) } });
+					byte = static_cast<char>(mFileContent.get()); // get the argument for the INSTRUCTION
+					code.emplace_back({ VM::Type::INT,{ static_cast<double>(byte) } });
+					break;
+				case FPUSH:
+					code.emplace_back({ VM::Type::INT,{ static_cast<double>(byte) } });
+					byte = static_cast<char>(mFileContent.get()); // get the argument for the INSTRUCTION
+					code.emplace_back({ VM::Type::FLOAT,{ static_cast<double>(byte) } }); //argument differs in type compared to the rest
+					break;
+				case CALL:
+					code.emplace_back({ VM::Type::INT,{ static_cast<double>(byte) } });
+					byte = static_cast<char>(mFileContent.get()); // get the first argument for the INSTRUCTION
+					code.emplace_back({ VM::Type::INT,{ static_cast<double>(byte) } });
+					byte = static_cast<char>(mFileContent.get()); // get the second argument for the INSTRUCTION
+					code.emplace_back({ VM::Type::INT,{ static_cast<double>(byte) } });
 
-					}
-					else 
-						for (auto i : InstructionCode)
-							if(i->mName == token)
-								code.emplace_back(
-									VM::Type{ 
-										VM::Type::INT,
-										{ 
-											std::atoi(token.c_str()
-										}
-							});
-				}
-				else
-				{
-					switch (std::atoi(token.c_str()))
-					{
-					default:
-						break;
-					}
+					break;
+				default:
+					code.emplace_back({ VM::Type::INT,{ static_cast<double>(byte) } });
+					break;
 				}
 
 			}

@@ -12,14 +12,15 @@ using Type = vm::VM::Type;
 
 #include "Measurement.h"
 
-#define N  5.0
+#define N 30.0
 
 long long test(long double n);
 
 
 
-
 int main() {
+
+
 
 	Type CodeLoop[] = {
 								
@@ -181,13 +182,13 @@ int main() {
 	VM::Memory CodeInstructions(std::begin(fibonacci), std::end(fibonacci));
 
 
-	//VM Machine(CodeInstructions, 38);
-	VM Machine(CodeInstructions2, 66);
+	VM Machine(CodeInstructions, 38);
+	//VM Machine(CodeInstructions2, 66);
 
 
 	try {
 		///auto exe = &VM::cpu;
-		auto avg = (measure<std::chrono::nanoseconds>::duration(Machine) );
+		//auto avg = (measure<std::chrono::nanoseconds>::duration(Machine) );
 
 		//auto avg2 = (measure<std::chrono::nanoseconds>::duration(test,N));
 

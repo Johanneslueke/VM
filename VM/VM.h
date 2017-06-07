@@ -42,7 +42,7 @@ namespace vm
 	{
 	public:
 		struct Type {
-			enum types  { INT, POINTER, FLOAT, STRING, CHAR } mObjecttype;
+			enum types  { INT, POINTER, FLOAT, CHAR } mObjecttype;
 
 			union Value {
 				double	mValue;
@@ -65,6 +65,8 @@ namespace vm
 			}
 
 		};
+
+
 	public:
 		typedef std::vector<Type> Memory;
 		typedef std::unique_ptr<char[]>			  HeapMemory;
@@ -83,7 +85,7 @@ namespace vm
 		long                       stackPointer = -1;
 		size_t                     framePointer = -1;
 
-		bool					   trace = true;
+		bool					   trace = false;
 
 		
 		void	pushOntoStack(Type T);

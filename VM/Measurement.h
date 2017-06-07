@@ -6,6 +6,7 @@
 #include <chrono>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 #include "ByteCode.h"
 ///////////////////////////////////////////////////////////////////////////
@@ -91,12 +92,12 @@ public:
 	void doStats() 
 	{
 		std::cout << "\n\n";
-		std::cout << "Name\t---> \t Min\t\t Max\t\t Average\t Sum\n";
-		std::cout << "---------------------------------------------------------------------------------\n";
+		std::cout << "Name\t---> \t Min\t\t Max\t\t Average\t Sum\t\tcount\n";
+		std::cout << "-----------------------------------------------------------------------------------------\n";
 		long double SumSum = 0, _Avg = 0;;
 		long long _Min = 0,
-			_Max = 0
-			;
+			_Max = 0,
+			_count = 0;
 		for (int i = 1; i < vm::MAXCODE - 1; i++)
 		{
 			std::stringstream					buffer;
@@ -105,8 +106,12 @@ public:
 			size_t	count = 0;
 			bool used = false;
 
-			for (auto item : mMeasurements)
-			{
+			mMeasurements.erase(
+				std::remove_if(
+					std::begin(mMeasurements),
+					std::end(mMeasurements),
+					[&](measurement& item) -> bool {
+
 				if (item.mName == vm::InstructionCode[i]->mName) // Filter current Instruction
 				{
 					used = true;
@@ -116,8 +121,14 @@ public:
 						Max = item.mDuration;
 					Sum += item.mDuration;
 					count++;
+
+					return true;
+
 				}
-			}
+				return false;
+
+			}), std::end(mMeasurements));
+
 			if (!used)
 			{
 				Min = 0, Max = 0, Sum = 0, Average = 0.0f, count = 0;
@@ -126,15 +137,22 @@ public:
 
 			Average = ((long double)Sum) / count;
 			//buffer << vm::InstructionCode[i]->mName << "\t---> [\t " << Min << "ns, " << Max << ", " << Average << ", "<<Sum <<"]\n";
-			std::cout << std::right<< vm::InstructionCode[i]->mName << "\t---> [\t " << Min  << "ns,\t " << Max << "ns,\t " << Average << "ns,\t " << Sum  << "ns\t]\n";
+			std::cout << std::right<< vm::InstructionCode[i]->mName << "\t---> [\t " << Min  << "ns,\t " << Max << "ns,\t " << Average 
+						<< "ns,\t " << Sum  << "ns\t"<< count <<"\t]\n";
 			this->mResults.push_back(buffer.str());
 			SumSum += Sum;
 			_Min += Min;
 			_Max += Max;
 			_Avg += Average;
+			_count += count;
 		}
-		std::cout << "---------------------------------------------------------------------------------\n";
-		std::cout <<"Sum\t\t "<<_Min*std::pow(10, -6) <<"ms\t "<<_Max*std::pow(10, -6) <<"ms\t "<<_Avg*std::pow(10, -6) <<"ms\t "<< SumSum*std::pow(10,-6)<<" ms\n\n";
+		std::cout << "-----------------------------------------------------------------------------------------\n";
+		std::cout <<"Sum\t\t "<<_Min*std::pow(10, -6) <<"ms\t "<<_Max*std::pow(10, -6) <<"ms\t "<<_Avg*std::pow(10, -6) <<"ms\t "<< SumSum*std::pow(10,-6)<<" ms\t"<<_count<<"\n";
+		std::cout << "Average\t\t " 
+			<< _Min*std::pow(10, 0) / _count << "ns/ct\t " 
+			<< _Max*std::pow(10, 0) / _count << "ns/ct\t "
+			<< _Avg*std::pow(10, 0) / _count << "ns/ct\t " 
+			<< SumSum*std::pow(10, 0) / _count << "ns/ct\t" <<  "\n\n";
 		
 	}
 
