@@ -27,7 +27,7 @@ namespace vm
 
 			std::istream	ByteCodeFile(file.c_str());
 			while (!ByteCodeFile.eof())
-				mFileContent.put(ByteCodeFile.get());
+				mFileContent.put(ByteCodeFile.get()); //TODO: Could be done better!
 		}
 
 		void parseHumanReadable()

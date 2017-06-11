@@ -13,7 +13,8 @@ namespace vm
 	class VM;
 
 	enum ByteCodes : unsigned long long {
-		IADD = 1,
+		NOP,
+		IADD,
 		ISUB,
 		IMUL,
 		ILT,		//Integer Less than
