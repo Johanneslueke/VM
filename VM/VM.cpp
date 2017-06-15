@@ -8,9 +8,11 @@
 #include "ByteCode.h"
 
 
+#include "Variant_helpers.h"
+
 #include "VM.h"
 
-
+#include <optional>
 
 namespace vm
 {
@@ -21,6 +23,53 @@ namespace vm
 		this->instructionPointer = main;
 
 		Instruction::Init(this);
+
+
+		/* DEMO TEST CODE PROVE OF CONCEPT*/
+		struct circle {};
+		struct aabb {};
+		using shape = std::variant<circle, aabb>;
+
+		shape s0{ circle{} };
+		shape s1{ aabb{} };
+
+		helper::match(s1, s0,s1)(
+
+			[](circle, circle, aabb) {std::cout << "circle vs circle\n"; },
+			[](circle, aabb, aabb) {std::cout << "circle vs aabb\n"; },
+			[](aabb, circle, aabb) {std::cout << "aabb vs circle\n"; },
+			[](aabb, aabb, aabb) {std::cout << "aabb vs aabb\n"; },
+
+			[](circle, circle, circle) {std::cout << "circle vs circle\n"; },
+			[](circle, aabb, circle) {std::cout << "circle vs aabb\n"; },
+			[](aabb, circle, circle) {std::cout << "aabb vs circle\n"; },
+			[](aabb, aabb, circle) {std::cout << "aabb vs aabb\n"; }
+			);
+
+		//////////////////////////////////////////////////////
+
+		struct format {};
+		struct timeout {};
+		using error = std::variant<format, timeout>;
+
+		struct accept {};
+		struct reject {};
+		using ok = std::variant<accept, reject>;
+
+		using response = std::variant<error, ok>;
+		response r{ error { timeout{}} };
+
+
+		helper::match(r)([](ok x) { helper::match(x)([](accept) {},
+													 [](reject) {}); },
+					     [](error x){ helper::match(x)(
+													 [](format) {},
+													 [](timeout) {});});
+
+
+
+		/* DEMO TEST CODE PROVE OF CONCEPT*/
+
 	}
 
 	VM::~VM() {
@@ -46,18 +95,19 @@ namespace vm
 						+ "! at Instruction Pointer("
 						+ std::to_string(instructionPointer - 1) + ").");
 				else if(opcode == 0)
-					throw std::runtime_error("Opcode 0 Does not exist!\n ");
+					throw std::runtime_error("Opcode 0 Does not exist yet!\n ");
 
 
 				if (trace) {
 					std::cout << std::left << std::setw(40) << disassemble() << std::right
 						<< stackString() << "\n";
-					auto avg = (measure<std::chrono::nanoseconds>::duration(InstructionCode[static_cast<size_t>(opcode)]->mInstruction));
 
-					stats.AddMeasurement({ InstructionCode[static_cast<size_t>(opcode)]->mName, avg.count() });
+					stats.AddMeasurement({ InstructionCode[static_cast<size_t>(opcode)]->mName,
+						(measure<std::chrono::nanoseconds>::duration(InstructionCode[static_cast<size_t>(opcode)]->mInstruction)).count() });
 				}
 				else {
-					stats.AddMeasurement({ InstructionCode[static_cast<size_t>(opcode)]->mName,  (measure<std::chrono::nanoseconds>::duration(InstructionCode[static_cast<size_t>(opcode)]->mInstruction)).count() });
+					stats.AddMeasurement({ InstructionCode[static_cast<size_t>(opcode)]->mName, 
+						(measure<std::chrono::nanoseconds>::duration(InstructionCode[static_cast<size_t>(opcode)]->mInstruction)).count() });
 				}
 			}
 			catch (std::out_of_range& e)

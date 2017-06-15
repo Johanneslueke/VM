@@ -5,6 +5,7 @@
 #ifndef UTILITY_VM_H
 #define UTILITY_VM_H
 #include <vector>
+#include <variant>
 
 #define INSTR(CODE,VAL,TYPE) Type{vm::VM::Type::INT,	{(double)CODE}	}, \
 							 Type{vm::VM::Type::TYPE,	{VAL}				}
