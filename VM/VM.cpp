@@ -25,25 +25,25 @@ namespace vm
 
 
 		/* DEMO TEST CODE PROVE OF CONCEPT*/
-		//struct circle {};
-		//struct aabb {};
-		//using shape = std::variant<circle, aabb>;
+		struct circle {};
+		struct aabb {};
+		using shape = std::variant<circle, aabb>;
 
-		//shape s0{ circle{} };
-		//shape s1{ aabb{} };
+		shape s0{ circle{} };
+		shape s1{ aabb{} };
 
-		//helper::match(s1, s0,s1)(
+		helper::match(s1, s0,s1)(
 
-		//	[](circle, circle, aabb) {std::cout << "circle vs circle\n"; },
-		//	[](circle, aabb, aabb) {std::cout << "circle vs aabb\n"; },
-		//	[](aabb, circle, aabb) {std::cout << "aabb vs circle\n"; },
-		//	[](aabb, aabb, aabb) {std::cout << "aabb vs aabb\n"; },
+			[](circle, circle, aabb) {std::cout << "circle vs circle\n"; },
+			[](circle, aabb, aabb) {std::cout << "circle vs aabb\n"; },
+			[](aabb, circle, aabb) {std::cout << "aabb vs circle\n"; },
+			[](aabb, aabb, aabb) {std::cout << "aabb vs aabb\n"; },
 
-		//	[](circle, circle, circle) {std::cout << "circle vs circle\n"; },
-		//	[](circle, aabb, circle) {std::cout << "circle vs aabb\n"; },
-		//	[](aabb, circle, circle) {std::cout << "aabb vs circle\n"; },
-		//	[](aabb, aabb, circle) {std::cout << "aabb vs aabb\n"; }
-		//	);
+			[](circle, circle, circle) {std::cout << "circle vs circle\n"; },
+			[](circle, aabb, circle) {std::cout << "circle vs aabb\n"; },
+			[](aabb, circle, circle) {std::cout << "aabb vs circle\n"; },
+			[](aabb, aabb, circle) {std::cout << "aabb vs aabb\n"; }
+			);
 
 		////////////////////////////////////////////////////////
 

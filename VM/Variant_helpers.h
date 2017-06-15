@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef Forwarding
+#define Forwarding(...) ::std::forward<decltype(__VA_ARGS__)>(__VA_ARGS__)
+#endif
+
 /*
 
 "Traditional" visitation
@@ -83,8 +87,8 @@ namespace vm
 
 				template<typename TFFwd, typename ... TRest>
 				overload_set(TFFwd &&f, TRest &&... fs) noexcept
-					: f_type(std::forward<TFFwd>(f)),
-					overload_set<TFs ...>{ std::forward<TRest>(fs) ...}
+					: f_type(Forwarding(f)),
+					overload_set<TFs ...>{ Forwarding(fs) ...}
 				{
 				}
 
@@ -97,7 +101,7 @@ namespace vm
 				TF _f;
 
 				template<typename TFFwd>
-				y_combinator_wrapper(TFFwd&&  xs) : _f{ std::forward<TFFwd>(xs) }
+				y_combinator_wrapper(TFFwd&&  xs) : _f{ Forwarding(xs) }
 				{
 
 				}
@@ -105,21 +109,21 @@ namespace vm
 				template<typename ... Ts>
 				decltype(auto) operator()(Ts&& ... xs) {
 					return _f(std::ref(*this),
-						std::forward<Ts>(xs) ...);
+						Forwarding(xs) ...);
 				}
 			};
 
 			template<typename TF>
 			auto y_combinator(TF&& f) {
-				return y_combinator_wrapper<std::decay_t<TF>>(std::forward<TF>(f));
+				return y_combinator_wrapper<std::decay_t<TF>>(Forwarding(f));
 			}
 
 			template<typename TVisitor, typename... TVariants>
 			decltype(auto) visit_recursively(TVisitor&& visitor, TVariants&& ... variants)
 			{
 				return std::visit(
-					std::forward<TVisitor>(visitor),
-					std::forward<decltype(variants)>(variants)._data...);
+					Forwarding(visitor),
+					Forwarding(variants)._data...);
 			}
 		}
 
@@ -158,22 +162,22 @@ namespace vm
 		{
 			return impl::overload_set<
 				std::remove_reference_t<TFs>
-				...>{std::forward<TFs>(fs)...};
+				...>{ Forwarding(fs)...};
 		}
 
 		template<typename TReturn, typename... TFs>
 		auto recursive_visitor(TFs&&...fs)
 		{
 			return impl::y_combinator(
-			[o = overload(std::forward<decltype(fs)>(fs)...)]
+			[o = overload( Forwarding(fs)...)]
 			
 			(auto self, auto&&... xs) -> TReturn 
 			{
 				return o([&self](auto&& ... vs) {
-					return impl::visit_recursively(self, std::forward<decltype(vs)>(vs)...);
+					return impl::visit_recursively(self, Forwarding(vs)...);
 				
 				}
-				, std::forward<decltype(xs)>(xs) ...);
+				, Forwarding(xs) ...);
 			});
 		}
 
@@ -187,10 +191,10 @@ namespace vm
 		{
 			return [&vs ...](auto&& ... fs) -> decltype(auto) {
 
-				auto visitor = overload(std::forward<decltype(fs)>(fs)...);
+				auto visitor = overload(Forwarding(fs)...);
 
 				return std::visit(visitor,
-					std::forward< decltype(vs)>(vs)...);
+					Forwarding(vs)...);
 
 			};
 		}
@@ -200,10 +204,10 @@ namespace vm
 		{
 			return[&vs ...](auto&& ... fs) -> decltype(auto) {
 
-				auto visitor = recursive_visitor(std::forward<decltype(fs)>(fs)...);
+				auto visitor = recursive_visitor(Forwarding(fs)...);
 
 				return impl::visit_recursively(visitor,
-					std::forward< decltype(vs)>(vs)...);
+					Forwarding(vs)...);
 
 			};
 		}
