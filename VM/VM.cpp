@@ -16,8 +16,7 @@
 
 namespace vm
 {
-	VM::VM(const std::vector<Type>& code, int main) : globals(1000),
-		heap(std::make_unique<char[]>(HeapSize()))	
+	VM::VM(const std::vector<Type>& code, int main) : globals(10)//,heap(std::make_unique<char[]>(HeapSize()))	
 	{
 		this->code = code;
 		this->instructionPointer = main;
@@ -26,45 +25,45 @@ namespace vm
 
 
 		/* DEMO TEST CODE PROVE OF CONCEPT*/
-		struct circle {};
-		struct aabb {};
-		using shape = std::variant<circle, aabb>;
+		//struct circle {};
+		//struct aabb {};
+		//using shape = std::variant<circle, aabb>;
 
-		shape s0{ circle{} };
-		shape s1{ aabb{} };
+		//shape s0{ circle{} };
+		//shape s1{ aabb{} };
 
-		helper::match(s1, s0,s1)(
+		//helper::match(s1, s0,s1)(
 
-			[](circle, circle, aabb) {std::cout << "circle vs circle\n"; },
-			[](circle, aabb, aabb) {std::cout << "circle vs aabb\n"; },
-			[](aabb, circle, aabb) {std::cout << "aabb vs circle\n"; },
-			[](aabb, aabb, aabb) {std::cout << "aabb vs aabb\n"; },
+		//	[](circle, circle, aabb) {std::cout << "circle vs circle\n"; },
+		//	[](circle, aabb, aabb) {std::cout << "circle vs aabb\n"; },
+		//	[](aabb, circle, aabb) {std::cout << "aabb vs circle\n"; },
+		//	[](aabb, aabb, aabb) {std::cout << "aabb vs aabb\n"; },
 
-			[](circle, circle, circle) {std::cout << "circle vs circle\n"; },
-			[](circle, aabb, circle) {std::cout << "circle vs aabb\n"; },
-			[](aabb, circle, circle) {std::cout << "aabb vs circle\n"; },
-			[](aabb, aabb, circle) {std::cout << "aabb vs aabb\n"; }
-			);
+		//	[](circle, circle, circle) {std::cout << "circle vs circle\n"; },
+		//	[](circle, aabb, circle) {std::cout << "circle vs aabb\n"; },
+		//	[](aabb, circle, circle) {std::cout << "aabb vs circle\n"; },
+		//	[](aabb, aabb, circle) {std::cout << "aabb vs aabb\n"; }
+		//	);
 
-		//////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////
 
-		struct format {};
-		struct timeout {};
-		using error = std::variant<format, timeout>;
+		//struct format {};
+		//struct timeout {};
+		//using error = std::variant<format, timeout>;
 
-		struct accept {};
-		struct reject {};
-		using ok = std::variant<accept, reject>;
+		//struct accept {};
+		//struct reject {};
+		//using ok = std::variant<accept, reject>;
 
-		using response = std::variant<error, ok>;
-		response r{ error { timeout{}} };
+		//using response = std::variant<error, ok>;
+		//response r{ error { timeout{}} };
 
 
-		helper::match(r)([](ok x) { helper::match(x)([](accept) {},
-													 [](reject) {}); },
-					     [](error x){ helper::match(x)(
-													 [](format) {},
-													 [](timeout) {});});
+		//helper::match(r)([](ok x) { helper::match(x)([](accept) {},
+		//											 [](reject) {}); },
+		//			     [](error x){ helper::match(x)(
+		//											 [](format) {},
+		//											 [](timeout) {});});
 
 
 
@@ -73,6 +72,11 @@ namespace vm
 	}
 
 	VM::~VM() {
+
+		for (auto item = InstructionCode; item != InstructionCode+MAXCODE;item++)
+		{
+			//item->release();
+		}
 		
 	}
 

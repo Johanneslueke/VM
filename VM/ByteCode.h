@@ -55,14 +55,9 @@ namespace vm
 		Instruction(const std::string& OpCode, int Value, std::function<void()> lambda);
 
 		virtual ~Instruction() = default;
-
-
 		static void Init( VM*);
-		
 	};
 
-	
-	
 	extern std::unique_ptr<Instruction> InstructionCode[]; 
 
 

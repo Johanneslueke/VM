@@ -9,7 +9,7 @@
 
 namespace vm
 {
-	std::unique_ptr<Instruction> InstructionCode[MAXCODE-1];
+	std::unique_ptr<Instruction> InstructionCode[MAXCODE];
 
 	Instruction::Instruction(const std::string& OpCode, int Value, int operands)
 		: mName(OpCode), mNumericName(Value), mOperandCount(operands)
@@ -32,12 +32,6 @@ namespace vm
 	{
 		InstructionCode[Value] = std::make_unique< Instruction>(*this);
 	}
-
-
-
-
-
-
 
 
 	void Instruction::Init( VM* Machine)

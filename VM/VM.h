@@ -59,6 +59,9 @@ namespace vm
 
 
 	public:
+		using TYPE = std::variant<double, bool, size_t>;
+		using VariantMemory =  std::vector<TYPE>;
+
 		typedef std::vector<Type>				  Memory;		
 		typedef std::unique_ptr<char[]>			  HeapMemory;	
 		
@@ -67,7 +70,7 @@ namespace vm
 		friend		  Instruction;			//<-- Ugly but it works, to my surprise
 
 		//Memory of the Machine
-		HeapMemory	  heap;	
+		//HeapMemory	  heap;	
 		Memory        stack;
 		Memory        globals;
 
@@ -107,12 +110,6 @@ namespace vm
 		{
 			cpu();
 		}
-
-
-		
-
-
-
 	};
 }
 
