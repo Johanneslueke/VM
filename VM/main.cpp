@@ -1,4 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
+
+
 #include <iostream>
 #include <chrono>
 #include "ByteCode.h"
@@ -16,44 +18,21 @@ using Type = vm::VM::Type;
 
 long long test(long double n);
 
+#define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
+#include <crtdbg.h>
 #include <stdio.h>
 
 #include <string.h>
 #include <malloc.h>
-#include <crtdbg.h>
 
-void OutputHeading(const char * explanation)
-{
-	_RPT1(_CRT_WARN, "\n\n%s:\n**************************************\
-************************************\n", explanation);
-}
 
-#ifdef   _DEBUG
-#define  SET_CRT_DEBUG_FIELD(a) \
-            _CrtSetDbgFlag((a) | _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG)) // Get the old setting
-#define  CLEAR_CRT_DEBUG_FIELD(a) \
-            _CrtSetDbgFlag(~(a) & _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG))
-#else
-#define  SET_CRT_DEBUG_FIELD(a)   ((void) 0)
-#define  CLEAR_CRT_DEBUG_FIELD(a) ((void) 0)
-#endif
 
+ 
 
 
 int main() {
 
-	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
-	_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
-	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
-	_CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDOUT);
-	_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
-	_CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDOUT);
-	SET_CRT_DEBUG_FIELD(_CRTDBG_LEAK_CHECK_DF);
-	SET_CRT_DEBUG_FIELD(_CRTDBG_CHECK_ALWAYS_DF);
-
-
-	{
 		//Type CodeLoop[] = {
 		//							
 		//   // N = 10						ADDRESS
@@ -192,18 +171,15 @@ int main() {
 		//	SINSTR(HALT)						// [72]		Abort
 		//};
 
-
 		//VM::Memory CodeInstructions2(std::begin(fibonacci2), std::end(fibonacci2));
 		VM::Memory CodeInstructions(std::begin(fibonacci), std::end(fibonacci));
-
 
 		VM Machine(CodeInstructions, 38);
 		//VM Machine(CodeInstructions2, 66);
 
-
 		try {
 			///auto exe = &VM::cpu;
-			//auto avg = (measure<std::chrono::nanoseconds>::duration(Machine) );
+			auto avg = (measure<std::chrono::nanoseconds>::duration(Machine) );
 
 			//auto avg2 = (measure<std::chrono::nanoseconds>::duration(test,N));
 
@@ -219,10 +195,7 @@ int main() {
 		{
 			std::cerr << e.what() << "\n";
 		}
-	}
 
-	_CrtDumpMemoryLeaks();
-	_CrtCheckMemory();
 
 	std::cin.get();
 	return 0;

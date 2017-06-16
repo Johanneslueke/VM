@@ -9,28 +9,28 @@
 
 namespace vm
 {
-	std::unique_ptr<Instruction> InstructionCode[MAXCODE];
+	std::unique_ptr<Instruction[]> InstructionCode = std::make_unique<Instruction[]>(MAXCODE);;
 
 	Instruction::Instruction(const std::string& OpCode, int Value, int operands)
 		: mName(OpCode), mNumericName(Value), mOperandCount(operands)
 	{
-		InstructionCode[Value] = std::make_unique< Instruction>(*this);
+		InstructionCode[Value] = (*this);
 	}
 	Instruction::Instruction(const std::string& OpCode, int Value)
 		: mName(OpCode), mNumericName(Value), mOperandCount(0)
 	{
-		InstructionCode[Value] = std::make_unique< Instruction>(*this);
+		InstructionCode[Value] = (*this);
 	}
 
 	Instruction::Instruction(const std::string& OpCode, int Value, int operands, std::function<void()> lambda)
 		: mName(OpCode), mNumericName(Value), mOperandCount(operands), mInstruction(lambda)
 	{
-		InstructionCode[Value] = std::make_unique< Instruction>(*this);
+		InstructionCode[Value] = (*this);
 	}
 	Instruction::Instruction(const std::string& OpCode, int Value, std::function<void()> lambda)
 		: mName(OpCode), mNumericName(Value), mOperandCount(0), mInstruction(lambda)
 	{
-		InstructionCode[Value] = std::make_unique< Instruction>(*this);
+		InstructionCode[Value] = (*this);
 	}
 
 

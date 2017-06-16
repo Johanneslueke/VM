@@ -49,16 +49,19 @@ namespace vm
 		int         mOperandCount;
 		std::function<void()>	mInstruction;
 
+		Instruction() = default;
 		Instruction(const std::string& OpCode, int Value, int operands);
 		Instruction(const std::string& OpCode, int Value);
 		Instruction(const std::string& OpCode, int Value, int operands, std::function<void()> lambda);
 		Instruction(const std::string& OpCode, int Value, std::function<void()> lambda);
 
-		virtual ~Instruction() = default;
+		virtual ~Instruction() {
+
+		};
 		static void Init( VM*);
 	};
 
-	extern std::unique_ptr<Instruction> InstructionCode[]; 
+	extern std::unique_ptr<Instruction[]> InstructionCode; 
 
 
 }

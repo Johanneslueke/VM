@@ -6,6 +6,7 @@
 #include <chrono>
 #include <vector>
 #include <iostream>
+#include <iomanip>
 #include <algorithm>
 
 #include "ByteCode.h"
@@ -13,7 +14,10 @@
 ///////////////////time measuring mechanism////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 
-#define fw(what) std::forward<decltype(what)>(what)
+
+#ifndef Forwarding
+#define Forwarding(...) ::std::forward<decltype(__VA_ARGS__)>(__VA_ARGS__)
+#endif
 
 /**
 * @ class measure
@@ -33,7 +37,7 @@ struct measure
 	{
 		auto start = ClockT::now();
 
-		fw(func)(std::forward<Args>(args)...);
+		Forwarding(func)(std::forward<Args>(args)...);
 
 		auto duration = std::chrono::duration_cast<TimeT>(ClockT::now() - start);
 
@@ -49,7 +53,7 @@ struct measure
 	{
 		auto start = ClockT::now();
 
-		fw(func)(std::forward<Args>(args)...);
+		Forwarding(func)(std::forward<Args>(args)...);
 
 		return std::chrono::duration_cast<TimeT>(ClockT::now() - start);
 	}
@@ -57,7 +61,11 @@ struct measure
 
 
 
-
+#define NS -0
+#define µS -3
+#define MS -6
+#define S
+#define UNIT  NS
 
 class Statistics
 {
@@ -92,16 +100,17 @@ public:
 	void doStats() 
 	{
 		std::cout << "\n\n";
-		std::cout << "Name\t---> \t Min\t\t Max\t\t Average\t Sum\t\tcount\n";
-		std::cout << "-----------------------------------------------------------------------------------------\n";
+		std::cout << "Name\t---> |\t Min\t\t| \t Max\t\t| \t Average\t| \t Sum\t\t|    count(ct)\t|        avrg/ct\t|\n";
+		std::cout << "==================================================================================================="
+			      <<"==============================================\n";
 		long double SumSum = 0, _Avg = 0;;
-		long long _Min = 0,
+		long double _Min = 0,
 			_Max = 0,
-			_count = 0;
+			_count = 0, _avgcount=0;
 		for (int i = 1; i < vm::MAXCODE - 1; i++)
 		{
 			std::stringstream					buffer;
-			long long Min = std::numeric_limits<long long>::max() , Max = std::numeric_limits<long long>::min(), Sum = 0;
+			long double Min = std::numeric_limits<long double>::max() , Max = std::numeric_limits<long double>::min(), Sum = 0;
 			long double Average = 0.0f;
 			size_t	count = 0;
 			bool used = false;
@@ -112,7 +121,7 @@ public:
 					std::end(mMeasurements),
 					[&](measurement& item) -> bool {
 
-				if (item.mName == vm::InstructionCode[i]->mName) // Filter current Instruction
+				if (item.mName == vm::InstructionCode[i].mName) // Filter current Instruction
 				{
 					used = true;
 					if (Min > item.mDuration)
@@ -137,22 +146,40 @@ public:
 
 			Average = ((long double)Sum) / count;
 			//buffer << vm::InstructionCode[i]->mName << "\t---> [\t " << Min << "ns, " << Max << ", " << Average << ", "<<Sum <<"]\n";
-			std::cout << std::right<< vm::InstructionCode[i]->mName << "\t---> [\t " << Min  << "ns,\t " << Max << "ns,\t " << Average 
-						<< "ns,\t " << Sum  << "ns\t"<< count <<"\t]\n";
+			std::cout.precision(2);
+			std::cout << std::right
+				<< vm::InstructionCode[i].mName << "\t---> |\t "
+				<< Min << " ns \t|\t "
+				<< Max << " ns \t|\t "
+				<< Average << " ns \t|\t "
+				<< Sum << " ns \t|\t"
+				<< count << "\t| \t" << std::setprecision(6)
+				<< Average / count<<" ns/ct \t|\n";
+
 			this->mResults.push_back(buffer.str());
 			SumSum += Sum;
 			_Min += Min;
 			_Max += Max;
 			_Avg += Average;
 			_count += count;
+			_avgcount += Average / count;
 		}
-		std::cout << "-----------------------------------------------------------------------------------------\n";
-		std::cout <<"Sum\t\t "<<_Min*std::pow(10, -6) <<"ms\t "<<_Max*std::pow(10, -6) <<"ms\t "<<_Avg*std::pow(10, -6) <<"ms\t "<< SumSum*std::pow(10,-6)<<" ms\t"<<_count<<"\n";
-		std::cout << "Average\t\t " 
-			<< _Min*std::pow(10, 0) / _count << "ns/ct\t " 
-			<< _Max*std::pow(10, 0) / _count << "ns/ct\t "
-			<< _Avg*std::pow(10, 0) / _count << "ns/ct\t " 
-			<< SumSum*std::pow(10, 0) / _count << "ns/ct\t" <<  "\n\n";
+		std::cout << "-----------------------------------------------------------------------------------------"
+			<<"--------------------------------------------------------\n";
+		std::cout.precision(7);
+		std::cout << "Sum \t     |\t "
+			<< _Min*std::pow(10, UNIT) << " ns\t| \t "
+			<< _Max*std::pow(10, UNIT) << " ns\t| \t "
+			<< _Avg*std::pow(10, UNIT) << " ns\t| \t "
+			<< SumSum*std::pow(10, UNIT) << " ns\t| \t"
+			<< _count << "\t| \t"
+			<< _avgcount << " \t| \n";
+
+		std::cout << "Average\t     |\t " 
+			<< _Min*std::pow(10, UNIT) / _count << " ns/ct\t| \t " 
+			<< _Max*std::pow(10, UNIT) / _count << " ns/ct\t| \t "
+			<< _Avg*std::pow(10, UNIT) / _count << " ns/ct\t| \t "
+			<< SumSum*std::pow(10, UNIT) / _count << "ns/ct\t| \t" <<  "\t|\n\n";
 		
 	}
 

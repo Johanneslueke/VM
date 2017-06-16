@@ -87,8 +87,7 @@ namespace vm
 
 				template<typename TFFwd, typename ... TRest>
 				overload_set(TFFwd &&f, TRest &&... fs) noexcept
-					: f_type(Forwarding(f)),
-					overload_set<TFs ...>{ Forwarding(fs) ...}
+					: f_type(Forwarding(f)),overload_set<TFs ...>{ Forwarding(fs) ...}
 				{
 				}
 
@@ -101,15 +100,12 @@ namespace vm
 				TF _f;
 
 				template<typename TFFwd>
-				y_combinator_wrapper(TFFwd&&  xs) : _f{ Forwarding(xs) }
-				{
-
+				y_combinator_wrapper(TFFwd&&  xs) : _f{ Forwarding(xs) }{
 				}
 
 				template<typename ... Ts>
 				decltype(auto) operator()(Ts&& ... xs) {
-					return _f(std::ref(*this),
-						Forwarding(xs) ...);
+					return _f(std::ref(*this), Forwarding(xs) ...);
 				}
 			};
 
@@ -121,9 +117,7 @@ namespace vm
 			template<typename TVisitor, typename... TVariants>
 			decltype(auto) visit_recursively(TVisitor&& visitor, TVariants&& ... variants)
 			{
-				return std::visit(
-					Forwarding(visitor),
-					Forwarding(variants)._data...);
+				return std::visit(Forwarding(visitor), Forwarding(variants)._data...);
 			}
 		}
 
@@ -160,9 +154,7 @@ namespace vm
 		template <typename... TFs>
 		constexpr auto overload(TFs && ... fs) noexcept
 		{
-			return impl::overload_set<
-				std::remove_reference_t<TFs>
-				...>{ Forwarding(fs)...};
+			return impl::overload_set< std::remove_reference_t<TFs>... >{ Forwarding(fs)...};
 		}
 
 		template<typename TReturn, typename... TFs>
@@ -173,32 +165,61 @@ namespace vm
 			
 			(auto self, auto&&... xs) -> TReturn 
 			{
-				return o([&self](auto&& ... vs) {
-					return impl::visit_recursively(self, Forwarding(vs)...);
-				
-				}
-				, Forwarding(xs) ...);
+				return o([&self](auto&& ... vs) { return impl::visit_recursively(self, Forwarding(vs)...); }, Forwarding(xs) ...);
 			});
 		}
 
 
 
 		/**
-		*
+		* Does take N Variants and returns a function
+		* which then takes N function objects
+		* 
+		*	match(variant1, variant2,...,variantN)(func1,func2,...,funcN);
 		*/
 		template<typename ... TVariants>
 		constexpr auto match(TVariants&& ... vs) 
 		{
+			// Returns One function written as Lambda 
+			// which captures all Variants as Reference and
+			// takes as argument N function objects.
+			// Its return type must be deduced via decltype, 
+			// to avoid an accidental copy of an object
+			// in case the visitation did not return an value!
+			//
+			// Specifically said  we want do deduce the type of  
+			// the visitation which is the return type of the
+			// returned function object!!!
+			//
 			return [&vs ...](auto&& ... fs) -> decltype(auto) {
 
+				// We Overload all possible ways to visit the std::variant 
+				// or similar. Collecting all N function objects given by 
+				// the arguments of this lambda expression 
 				auto visitor = overload(Forwarding(fs)...);
 
-				return std::visit(visitor,
-					Forwarding(vs)...);
+				// We try to match our N variants with our N function objects
+				return std::visit(visitor, Forwarding(vs)...);
 
 			};
 		}
 
+		/*
+		* Expects a variant containing itself
+		* pseudocode: 
+		*
+		*	struct <name>;
+		*   using r_name = std::tuple<...,name>;
+		*
+		*	struct <name>
+		*	{
+		*		using self = std::variant< ..., std::unique_ptr<r_name> >;
+		*		self _data;
+		*	
+		*		template<typename T>
+		*		name(T... arg) : _data(std::forwarding<self>(arg){}
+		*	};
+		*/
 		template<typename ... TVariants>
 		constexpr auto match_recursively(TVariants&& ... vs)
 		{
@@ -206,8 +227,7 @@ namespace vm
 
 				auto visitor = recursive_visitor(Forwarding(fs)...);
 
-				return impl::visit_recursively(visitor,
-					Forwarding(vs)...);
+				return impl::visit_recursively(visitor, Forwarding(vs)...);
 
 			};
 		}
