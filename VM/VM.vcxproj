@@ -91,6 +91,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,17 +131,20 @@
   <ItemGroup>
     <ClInclude Include="ByteCode.h" />
     <ClInclude Include="ByteCodeFileReader.h" />
+    <ClInclude Include="easylogger++.h" />
     <ClInclude Include="Measurement.h" />
     <ClInclude Include="Variant_helpers.h" />
     <ClInclude Include="VM.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ByteCode.cpp" />
+    <ClCompile Include="easylogger++.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="VM.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Platforms\x64\PlatformToolsets\v141\Toolset.targets" />
+    <None Include="Logger.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

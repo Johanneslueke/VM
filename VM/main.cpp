@@ -1,5 +1,5 @@
-#define _CRT_SECURE_NO_WARNINGS
-
+//#define _CRT_SECURE_NO_WARNINGS
+#include "easylogger++.h"
 
 #include <iostream>
 #include <chrono>
@@ -29,7 +29,7 @@ long long test(long double n);
 
 
  
-
+//INITIALIZE_EASYLOGGINGPP
 
 int main() {
 
