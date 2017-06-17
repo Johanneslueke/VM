@@ -29,7 +29,7 @@ long long test(long double n);
 
 
  
-//INITIALIZE_EASYLOGGINGPP
+INITIALIZE_EASYLOGGINGPP
 
 int main() {
 

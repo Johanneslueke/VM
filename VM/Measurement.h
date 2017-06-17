@@ -118,9 +118,9 @@ public:
 		for (int i = 1; i < vm::MAXCODE - 1; i++)
 		{
 			//std::stringstream					buffer;
-			long double 
-				Min = std::numeric_limits<long double>::max() ,
-				Max = std::numeric_limits<long double>::min(),
+			long double //HACK: WHAT THE FUCK IS GOING ON WHY DOES std::numeric DON'T WORK ANYMORE IF easylogger IS INCLUDED
+				Min = 1000000000,// std::numeric_limits<long double>::max() ,
+				Max = -1000000000,//std::numeric_limits<long double>::min(),
 				Sum = 0,
 				Average = 0.0f;
 
