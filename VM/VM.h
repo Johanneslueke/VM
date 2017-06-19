@@ -81,7 +81,7 @@ namespace vm
 		size_t                     framePointer = -1;
 
 		//Debug
-		bool					   trace = false;
+		bool					   trace = true;
 
 	protected:
 
