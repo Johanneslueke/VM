@@ -177,7 +177,7 @@ namespace vm
 			if (InstructionCode[static_cast<size_t>(opcode)].mOperandCount > 0) {
 				auto nargs = InstructionCode[static_cast<size_t>(opcode)].mOperandCount;
 				std::vector<std::string> operands;
-				for (auto i = instructionPointer + 1; i <= instructionPointer + nargs; i++)
+				for (auto i = instructionPointer ; i <= instructionPointer + nargs-1; i++)
 				{
 					switch (code[i].mObjecttype)
 					{
