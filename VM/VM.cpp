@@ -209,7 +209,7 @@ namespace vm
 		buffer << "\tstack[";
 		if (stack.size() != 0)
 		{
-			for (size_t i = 0; i < stackPointer; i++) {
+			for (size_t i = 0; i <= stackPointer; ++i) {
 				switch (stack[i].mObjecttype)
 				{
 				case Type::INT:
