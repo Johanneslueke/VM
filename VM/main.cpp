@@ -55,31 +55,31 @@ int main() {
 		//};
 
 		//Recursive
-		//Type factorial[] = {
-		//	//Instruction							// ADDRESS
-		//	///Function factorial(var N)			// ARGS=1, LOCALS=0		
-		//	INSTR(LOAD, -3.0,INT),					// [0]		Copy Given Argument N Into Current StackFrame
-		//	INSTR(IPUSH, 2.0,INT),					// [2]		Push Constant (2) Onto Stack
-		//	SINSTR(ILT),							// [4]		IF ((N < 2) == TRUE) Push TRUE ELSE Push FALSE Onto Stack
-		//	INSTR(BRFALSE, 10ull,POINTER),			// [5]		Jump to Addr 10 if on Stack lays FALSE
-		//	INSTR(IPUSH, 1.0,INT),					// [7]		Push Constant (1) Onto Stack
-		//	SINSTR(RET),							// [9]		Return Constant (1)[7]
-		//											// 
-		//											//			RETURN N * factorial( N-1 )
-		//	INSTR(LOAD, -3.0,INT),					// [10]		Copy Given Argument N Into Current StackFrame
-		//	INSTR(LOAD, -3.0,INT),					// [12]		Copy Given Argument N Into Current StackFrame
-		//	INSTR(IPUSH, 1.0,INT),					// [14]		Push Constant (1) Onto Stack
-		//	SINSTR(ISUB),							// [16]		Substract Constant (1) of Value (N) 
-		//	DINSTR(CALL, 0ull, 1.0,POINTER,INT),	// [17]		Call Function: factorial(var N)
-		//	SINSTR(IMUL),							// [20]		Multiplicate Result of (factorial(var N))[17] times Value (N)[10]
-		//	SINSTR(RET),							// [21]		Return Result[20]
-		//	/// Function Main()						// ARGS=0, LOCALS=0
-		//	//										 <-- MAIN METHOD!
-		//	INSTR(IPUSH, N,INT),					// [22]		Push Constant (5) Onto StacK
-		//	DINSTR(CALL, 0ull, 1.0,POINTER,INT),	// [25]		Call Function: factorial(var N)
-		//    SINSTR(PRINT),							// [26]		Print Stack Top
-		//	SINSTR(HALT)							// [27]		Abort
-		//};
+		Type factorial[] = {
+			//Instruction							// ADDRESS
+			///Function factorial(var N)			// ARGS=1, LOCALS=0		
+			INSTR(LOAD, -3.0,INT),					// [0]		Copy Given Argument N Into Current StackFrame
+			INSTR(IPUSH, 2.0,INT),					// [2]		Push Constant (2) Onto Stack
+			SINSTR(ILT),							// [4]		IF ((N < 2) == TRUE) Push TRUE ELSE Push FALSE Onto Stack
+			INSTR(BRFALSE, 10ull,POINTER),			// [5]		Jump to Addr 10 if on Stack lays FALSE
+			INSTR(IPUSH, 1.0,INT),					// [7]		Push Constant (1) Onto Stack
+			SINSTR(RET),							// [9]		Return Constant (1)[7]
+													// 
+													//			RETURN N * factorial( N-1 )
+			INSTR(LOAD, -3.0,INT),					// [10]		Copy Given Argument N Into Current StackFrame
+			INSTR(LOAD, -3.0,INT),					// [12]		Copy Given Argument N Into Current StackFrame
+			INSTR(IPUSH, 1.0,INT),					// [14]		Push Constant (1) Onto Stack
+			SINSTR(ISUB),							// [16]		Substract Constant (1) of Value (N) 
+			DINSTR(CALL, 0ull, 1.0,POINTER,INT),	// [17]		Call Function: factorial(var N)
+			SINSTR(IMUL),							// [20]		Multiplicate Result of (factorial(var N))[17] times Value (N)[10]
+			SINSTR(RET),							// [21]		Return Result[20]
+			/// Function Main()						// ARGS=0, LOCALS=0
+			//										 <-- MAIN METHOD!
+			INSTR(IPUSH, N,INT),					// [22]		Push Constant (5) Onto StacK
+			DINSTR(CALL, 0ull, 1.0,POINTER,INT),	// [25]		Call Function: factorial(var N)
+		    SINSTR(PRINT),							// [26]		Print Stack Top
+			SINSTR(HALT)							// [27]		Abort
+		};
 		//Recursive
 		Type fibonacci[] = {
 

@@ -28,7 +28,6 @@ namespace vm
 		
 		struct circle {};
 		struct aabb {};
-		std::tuple<circle, aabb> t0;
 		using shape = std::variant<circle, aabb>;
 
 		shape s0{ circle{} };
@@ -126,16 +125,13 @@ namespace vm
 				if (trace) {
 					std::cout << std::left << std::setw(40) << disassemble() << std::right
 						<< stackString() << "\n";
-					auto start = std::chrono::system_clock::now();
-					auto tp = std::chrono::system_clock::to_time_t(start);
+		
 					stats.AddMeasurement({ InstructionCode[static_cast<size_t>(opcode)].mName,
-						(measure<std::chrono::nanoseconds>::duration(InstructionCode[static_cast<size_t>(opcode)].mInstruction)).count(), tp });
+						(measure<std::chrono::nanoseconds>::duration(InstructionCode[static_cast<size_t>(opcode)].mInstruction)).count()});
 				}
 				else {
-					auto start = std::chrono::system_clock::now();
-					auto tp = std::chrono::system_clock::to_time_t(start);
 					stats.AddMeasurement({ InstructionCode[static_cast<size_t>(opcode)].mName, 
-						(measure<std::chrono::nanoseconds>::duration(InstructionCode[static_cast<size_t>(opcode)].mInstruction)).count(), tp });
+						(measure<std::chrono::nanoseconds>::duration(InstructionCode[static_cast<size_t>(opcode)].mInstruction)).count() });
 				}
 			}
 			catch (std::out_of_range& e)

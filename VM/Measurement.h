@@ -14,7 +14,7 @@
 #include <limits>
 
 
-
+#include "easylogger++.h"
 #include "ByteCode.h"
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////time measuring mechanism////////////////////////////////
@@ -75,7 +75,6 @@ class Statistics
 public:
 	struct measurement {
 		std::string					mName;
-		std::time_t					mTimepoint;
 		  long long				mDuration;
 
 		  long mAccumaleted = 0;
@@ -83,12 +82,16 @@ public:
 		  long mMin = 0, mMax = 0;
 
 		measurement() = default;
-		measurement(const std::string& name,  long long  duration,std::time_t tp) :
-			mName(name), mDuration(duration), mTimepoint{tp} {}
+		measurement(const std::string& name, long long  duration) :
+			mName(name), mDuration(duration) {}
 	};
 public:
 	Statistics() {
-		//el::Loggers::configureFromGlobal("Logger.config");
+
+		// Load configuration from file
+		el::Configurations conf("Logger.config");
+		// Reconfigure single logger
+		el::Loggers::reconfigureLogger("default", conf);
 	}
 	std::vector<measurement>			mMeasurements;
 	std::vector<std::string>			mResults;
@@ -143,11 +146,11 @@ public:
 						Max = item.mDuration;
 					Sum += item.mDuration;
 					count++;
-					/*LOG(INFO) << ";"
+					LOG(INFO) 
 						<< item.mName 
-						<< ";"
+						<< " | "
 						<< item.mDuration
-						<<"\n";*/
+						<<"\n";
 					return true;
 
 				}
@@ -181,6 +184,8 @@ public:
 			_count += count;
 			_avgcount += Average / count;
 		}
+		
+		
 		std::cout << "-----------------------------------------------------------------------------------------"
 			<<"--------------------------------------------------------\n";
 		std::cout.precision(7);
