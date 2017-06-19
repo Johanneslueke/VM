@@ -13,7 +13,7 @@ namespace vm
 	class VM;
 
 	enum ByteCodes : unsigned long long {
-		NOP,
+		NOP=0,
 		IADD,
 		ISUB,
 		IMUL,

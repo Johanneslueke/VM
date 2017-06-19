@@ -123,15 +123,30 @@ namespace vm
 
 
 				if (trace) {
-					std::cout << std::left << std::setw(40) << disassemble() << std::right
+
+					
+
+					stats.AddMeasurement({ InstructionCode[opcode].mName,
+						(measure<std::chrono::nanoseconds>::
+							duration(
+								InstructionCode[opcode].mInstruction
+							)).count() 
+					});
+
+					std::cout << std::left
+						<< std::setw(40)
+						<< disassemble()
+						<< std::right
 						<< stackString() << "\n";
-		
-					stats.AddMeasurement({ InstructionCode[static_cast<size_t>(opcode)].mName,
-						(measure<std::chrono::nanoseconds>::duration(InstructionCode[static_cast<size_t>(opcode)].mInstruction)).count()});
+	
 				}
 				else {
-					stats.AddMeasurement({ InstructionCode[static_cast<size_t>(opcode)].mName, 
-						(measure<std::chrono::nanoseconds>::duration(InstructionCode[static_cast<size_t>(opcode)].mInstruction)).count() });
+					stats.AddMeasurement({ InstructionCode[opcode].mName,
+						(measure<std::chrono::nanoseconds>::
+							duration(
+								InstructionCode[opcode].mInstruction
+							)).count()
+					});
 				}
 			}
 			catch (std::out_of_range& e)
@@ -195,7 +210,7 @@ namespace vm
 	std::string VM::stackString() const {
 		std::stringstream buffer;
 		buffer << "\tstack[";
-		for (int i = 0; i <= stackPointer; i++) {
+		for (size_t i = 0; i < stackPointer; i++) {
 			switch (stack[i].mObjecttype)
 			{
 			case Type::INT:

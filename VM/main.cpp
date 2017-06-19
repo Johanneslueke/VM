@@ -111,12 +111,12 @@ int main() {
 			SINSTR(RET)	,						 // [37]	Return Result
 
 
-												 /// Function Main()					// ARGS=0, LOCALS=0
-												 //									 <-- MAIN METHOD!
-												 INSTR(IPUSH, N,INT),				// [38]		Push Constant (5) Onto StacK
-												 DINSTR(CALL, 0ull, 1.0,POINTER,INT),// [40]		Call Function: factorial(var N)
-												 SINSTR(PRINT),						// [43]		Print Stack Top
-												 SINSTR(HALT)						// [44]		Abort
+			/// Function Main()					// ARGS=0, LOCALS=0
+			//									 <-- MAIN METHOD!
+			INSTR(IPUSH, N,INT),				// [38]		Push Constant (5) Onto StacK
+			DINSTR(CALL, 0ull, 1.0,POINTER,INT),// [40]		Call Function: factorial(var N)
+			SINSTR(PRINT),						// [43]		Print Stack Top
+			SINSTR(HALT)						// [44]		Abort
 
 
 
