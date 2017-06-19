@@ -108,7 +108,7 @@ namespace vm
 		while (instructionPointer < code.size())
 		{
 			try {
-				auto opcode = static_cast<size_t>(code[instructionPointer ].mValue.mValue);// fetch OpCode
+				auto opcode = code[instructionPointer].mValue.mValue;// fetch OpCode
 				instructionPointer++;
 
 				if (opcode < 0)
@@ -123,28 +123,25 @@ namespace vm
 
 
 				if (trace) {
-
-					
-
-					stats.AddMeasurement({ InstructionCode[opcode].mName,
-						(measure<std::chrono::nanoseconds>::
-							duration(
-								InstructionCode[opcode].mInstruction
-							)).count() 
-					});
-
 					std::cout << std::left
 						<< std::setw(40)
 						<< disassemble()
 						<< std::right
 						<< stackString() << "\n";
+
+					stats.AddMeasurement({ InstructionCode[static_cast<size_t>(opcode)].mName,
+						(measure<std::chrono::nanoseconds>::
+							duration(
+								InstructionCode[static_cast<size_t>(opcode)].mInstruction
+							)).count()
+					});
 	
 				}
 				else {
-					stats.AddMeasurement({ InstructionCode[opcode].mName,
+					stats.AddMeasurement({ InstructionCode[static_cast<size_t>(opcode)].mName,
 						(measure<std::chrono::nanoseconds>::
 							duration(
-								InstructionCode[opcode].mInstruction
+								InstructionCode[static_cast<size_t>(opcode)].mInstruction
 							)).count()
 					});
 				}
@@ -170,7 +167,7 @@ namespace vm
 
 	std::string VM::disassemble() const {
 		std::stringstream buffer;
-		auto opcode = static_cast<size_t>(code[instructionPointer - 1].mValue.mValue);
+		auto opcode = static_cast<size_t>(code[instructionPointer-1].mValue.mValue);
 		if (opcode != 0 && opcode < MAXCODE) //Print Code section
 		{
 			buffer << std::showbase << std::setbase(10)
@@ -210,17 +207,20 @@ namespace vm
 	std::string VM::stackString() const {
 		std::stringstream buffer;
 		buffer << "\tstack[";
-		for (size_t i = 0; i < stackPointer; i++) {
-			switch (stack[i].mObjecttype)
-			{
-			case Type::INT:
-				buffer << " " << (long long)stack[i].mValue.mValue;
-				break;
-			case Type::FLOAT:
-				buffer << " " << stack[i].mValue.mValue;
-				break;
-			}
+		if (stack.size() != 0)
+		{
+			for (size_t i = 0; i < stackPointer; i++) {
+				switch (stack[i].mObjecttype)
+				{
+				case Type::INT:
+					buffer << " " << (long long)stack[i].mValue.mValue;
+					break;
+				case Type::FLOAT:
+					buffer << " " << stack[i].mValue.mValue;
+					break;
+				}
 
+			}
 		}
 		buffer << " ]";
 		return buffer.str();
