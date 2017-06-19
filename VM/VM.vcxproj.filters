@@ -27,6 +27,12 @@
     <ClInclude Include="Measurement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Variant_helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="easylogger++.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -38,5 +44,14 @@
     <ClCompile Include="VM.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="easylogger++.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Platforms\x64\PlatformToolsets\v141\Toolset.targets" />
+    <None Include="Logger.config">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

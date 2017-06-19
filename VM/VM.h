@@ -5,6 +5,7 @@
 #ifndef UTILITY_VM_H
 #define UTILITY_VM_H
 #include <vector>
+#include <variant>
 
 #define INSTR(CODE,VAL,TYPE) Type{vm::VM::Type::INT,	{(double)CODE}	}, \
 							 Type{vm::VM::Type::TYPE,	{VAL}				}
@@ -58,6 +59,9 @@ namespace vm
 
 
 	public:
+		using TYPE = std::variant<double, bool, size_t>;
+		using VariantMemory =  std::vector<TYPE>;
+
 		typedef std::vector<Type>				  Memory;		
 		typedef std::unique_ptr<char[]>			  HeapMemory;	
 		
@@ -66,7 +70,7 @@ namespace vm
 		friend		  Instruction;			//<-- Ugly but it works, to my surprise
 
 		//Memory of the Machine
-		HeapMemory	  heap;	
+		//HeapMemory	  heap;	
 		Memory        stack;
 		Memory        globals;
 
@@ -106,12 +110,6 @@ namespace vm
 		{
 			cpu();
 		}
-
-
-		
-
-
-
 	};
 }
 
