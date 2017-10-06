@@ -6,7 +6,7 @@
 #include "ByteCode.h"
 #include "vm.h"
 
-
+#include "Variant_helpers.h"
 #include <stdio.h>
 using namespace vm;
 using namespace std::chrono;
@@ -14,45 +14,38 @@ using Type = vm::VM::Type;
 
 #include "Measurement.h"
 
-#define N 5.0
+#define N 4.0
 
 long long test(long double n);
 
-#define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
-#include <crtdbg.h>
-#include <stdio.h>
 
-#include <string.h>
-#include <malloc.h>
-
-
-
- 
 INITIALIZE_EASYLOGGINGPP
 
 int main() {
 
-		//Type CodeLoop[] = {
-		//							
-		//   // N = 10						ADDRESS
-		//	INSTR(IPUSH, 10.0,INT),			// 0  Push Constant (10) Onto Stack 
-		//	INSTR(GSTORE, 0ull,POINTER),			// 2  Store StackTop{Constant (10)} Globally var(N)								 
-		//	INSTR(IPUSH, 0.0,INT),			// 4  Push Constant (0) Onto Stack
-		//	INSTR(GSTORE, 1ull,INT),			// 6  Store StackTop{Constant (10)} Globally var(i)
-		//									// do{
-		//	INSTR(GLOAD, 1ull,POINTER),			// 15 Load i
-		//	INSTR(IPUSH, 1.0,INT),			// 17 Push Constant (1) Onto Stack 
-		//	SINSTR(IADD),					// 19 i = i+1
-		//	INSTR(GSTORE, 1ull,POINTER),
-		//									// }while( i < N)
-		//	INSTR(GLOAD, 1ull,POINTER),			// 20
-		//	INSTR(GLOAD, 0ull,POINTER)	,			// 22
-		//	SINSTR(ILT),					// 24
-		//	INSTR(BRTRUE, 8ull,POINTER),		// 25;
-		//									
-		//	SINSTR(HALT)					// 26
-		//};
+	
+
+		Type CodeLoop[] = {
+									
+		   // N = 10						ADDRESS
+			INSTR(IPUSH, 10.0,INT),			// 0  Push Constant (10) Onto Stack 
+			INSTR(GSTORE, 0ull,POINTER),	// 2  Store StackTop{Constant (10)} Globally var(N)								 
+			INSTR(IPUSH, 0.0,INT),			// 4  Push Constant (0) Onto Stack
+			INSTR(GSTORE, 1ull,INT),		// 6  Store StackTop{Constant (10)} Globally var(i)
+											// do{
+			INSTR(GLOAD, 1ull,POINTER),		// 15 Load i
+			INSTR(IPUSH, 1.0,INT),			// 17 Push Constant (1) Onto Stack 
+			SINSTR(IADD),					// 19 i = i+1
+			INSTR(GSTORE, 1ull,POINTER),
+											// }while( i < N)
+			INSTR(GLOAD, 1ull,POINTER),		// 20
+			INSTR(GLOAD, 0ull,POINTER)	,	// 22
+			SINSTR(ILT),					// 24
+			INSTR(BRTRUE, 8ull,POINTER),	// 25;
+											
+			SINSTR(HALT)					// 26
+		};
 
 		//Recursive
 		Type factorial[] = {
@@ -82,6 +75,7 @@ int main() {
 		};
 		//Recursive
 		Type fibonacci[] = {
+
 
 			INSTR(LOAD,-3.0,INT),				 // [0]		Copy Given Argument N Into Current StackFrame
 			INSTR(IPUSH,0.0,INT),				 // [2]		Push Constant (0) Onto Stack
@@ -180,6 +174,7 @@ int main() {
 		try {
 			///auto exe = &VM::cpu;
 			auto avg = (measure<std::chrono::nanoseconds>::duration(Machine) );
+
 
 			//auto avg2 = (measure<std::chrono::nanoseconds>::duration(test,N));
 

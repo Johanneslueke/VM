@@ -55,7 +55,8 @@
 */
 
 namespace vm
-{namespace helper {
+{
+	namespace helper {
 		namespace impl {
 			template <typename...>
 			struct overload_set;
@@ -175,7 +176,7 @@ namespace vm
 		* Does take N Variants and returns a function
 		* which then takes N function objects
 		* 
-		*	match(variant1, variant2,...,variantN)(func1,func2,...,funcN);
+		*	match(func1,func2,...,(variant1, variant2,...,variantN)funcN);
 		*/
 		template<typename ... TVariants>
 		constexpr auto match(TVariants&& ... vs) 

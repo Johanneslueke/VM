@@ -29,6 +29,8 @@
 #include "Measurement.h"
 namespace vm
 {
+	
+	
 	class VM
 	{
 	public:

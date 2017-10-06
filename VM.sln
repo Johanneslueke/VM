@@ -5,10 +5,9 @@ VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VM", "VM\VM.vcxproj", "{78D173DF-E24E-4BB3-B220-9125E5BB72CF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LispFrontend", "LispFrontend\LispFrontend.vcxproj", "{58569707-7EED-4798-99D6-07CC470A7C91}"
+EndProject
 Global
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
@@ -24,9 +23,20 @@ Global
 		{78D173DF-E24E-4BB3-B220-9125E5BB72CF}.Release|x64.Build.0 = Release|x64
 		{78D173DF-E24E-4BB3-B220-9125E5BB72CF}.Release|x86.ActiveCfg = Release|Win32
 		{78D173DF-E24E-4BB3-B220-9125E5BB72CF}.Release|x86.Build.0 = Release|Win32
+		{58569707-7EED-4798-99D6-07CC470A7C91}.Debug|x64.ActiveCfg = Debug|x64
+		{58569707-7EED-4798-99D6-07CC470A7C91}.Debug|x64.Build.0 = Debug|x64
+		{58569707-7EED-4798-99D6-07CC470A7C91}.Debug|x86.ActiveCfg = Debug|Win32
+		{58569707-7EED-4798-99D6-07CC470A7C91}.Debug|x86.Build.0 = Debug|Win32
+		{58569707-7EED-4798-99D6-07CC470A7C91}.Release|x64.ActiveCfg = Release|x64
+		{58569707-7EED-4798-99D6-07CC470A7C91}.Release|x64.Build.0 = Release|x64
+		{58569707-7EED-4798-99D6-07CC470A7C91}.Release|x86.ActiveCfg = Release|Win32
+		{58569707-7EED-4798-99D6-07CC470A7C91}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true

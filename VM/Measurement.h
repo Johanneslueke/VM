@@ -134,8 +134,7 @@ public:
 				std::remove_if(
 					std::begin(mMeasurements),
 					std::end(mMeasurements),
-					[&](measurement& item) -> bool 
-			{
+					[&](measurement& item) -> bool {
 
 				if (item.mName == vm::InstructionCode[i].mName) // Filter current Instruction
 				{

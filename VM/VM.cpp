@@ -134,7 +134,7 @@ namespace vm
 							duration(
 								InstructionCode[static_cast<size_t>(opcode)].mInstruction
 							)).count()
-					});
+					}); //Decode and Execute Opcode
 	
 				}
 				else {
@@ -142,8 +142,8 @@ namespace vm
 						(measure<std::chrono::nanoseconds>::
 							duration(
 								InstructionCode[static_cast<size_t>(opcode)].mInstruction
-							)).count()
-					});
+							)).count()  
+					});//Decode and Execute Opcode
 				}
 			}
 			catch (std::out_of_range& e)
