@@ -39,6 +39,9 @@ namespace vm
 		CALL,		//Function call
 		RET,		//Returns to the Point after the Call
 
+		HLOAD,		//Loads data from the HEAP
+		HSTORE,
+
 		MAXCODE
 	};
 

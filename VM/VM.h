@@ -5,7 +5,8 @@
 #ifndef UTILITY_VM_H
 #define UTILITY_VM_H
 #include <vector>
-#include <variant>
+#include <array>
+//#include <variant>
 
 #define INSTR(CODE,VAL,TYPE) Type{vm::VM::Type::INT,	{(double)CODE}	}, \
 							 Type{vm::VM::Type::TYPE,	{VAL}				}
@@ -32,6 +33,7 @@ namespace vm
 	class VM
 	{
 	public:
+
 		struct Type {
 			enum types  { INT, POINTER, FLOAT, CHAR } mObjecttype;
 
@@ -59,22 +61,19 @@ namespace vm
 
 
 	public:
-		using TYPE = std::variant<double, bool, size_t>;
-		using VariantMemory =  std::vector<TYPE>;
-
 		typedef std::vector<Type>				  Memory;		
-		typedef std::unique_ptr<char[]>			  HeapMemory;	
+		typedef std::array<char, Kilobytes(512)>  HeapMemory;
 		
 
 	private:
 		friend		  Instruction;			//<-- Ugly but it works, to my surprise
 
 		//Memory of the Machine
-		//HeapMemory	  heap;	
 		Memory        stack;
 		Memory        globals;
 
 			
+		HeapMemory	  heap;
 		Memory        code;					//!<-- Copy of the Code to execute
 		Statistics	  stats;				//!<-- Does Statistics about the execution of the Code
 
@@ -93,10 +92,15 @@ namespace vm
 		Type	popOffStack();
 		size_t	popPointer();
 
-		size_t  HeapSize() const { return Kilobytes(512); }
+		constexpr size_t  HeapSize() const { return Kilobytes(512); }
 
 		std::string disassemble() const;
 		std::string stackString() const;
+
+		size_t fetch();
+		auto decode(size_t opcode);
+		void execute(size_t opcode);
+		void validate_opcode(size_t opcode);
 		
 
 	public:

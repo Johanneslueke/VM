@@ -16,15 +16,9 @@ using Type = vm::VM::Type;
 
 #define N 5.0
 
-long long test(long double n);
 
 #define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#include <stdio.h>
 
-#include <string.h>
-#include <malloc.h>
 
 
 
@@ -61,7 +55,7 @@ int main() {
 			INSTR(LOAD, -3.0,INT),					// [0]		Copy Given Argument N Into Current StackFrame
 			INSTR(IPUSH, 2.0,INT),					// [2]		Push Constant (2) Onto Stack
 			SINSTR(ILT),							// [4]		IF ((N < 2) == TRUE) Push TRUE ELSE Push FALSE Onto Stack
-			INSTR(BRFALSE, 10ull,POINTER),			// [5]		Jump to Addr 10 if on Stack lays FALSE
+			INSTR(BRFALSE, 10u,POINTER),			// [5]		Jump to Addr 10 if on Stack lays FALSE
 			INSTR(IPUSH, 1.0,INT),					// [7]		Push Constant (1) Onto Stack
 			SINSTR(RET),							// [9]		Return Constant (1)[7]
 													// 
@@ -70,13 +64,13 @@ int main() {
 			INSTR(LOAD, -3.0,INT),					// [12]		Copy Given Argument N Into Current StackFrame
 			INSTR(IPUSH, 1.0,INT),					// [14]		Push Constant (1) Onto Stack
 			SINSTR(ISUB),							// [16]		Substract Constant (1) of Value (N) 
-			DINSTR(CALL, 0ull, 1.0,POINTER,INT),	// [17]		Call Function: factorial(var N)
+			DINSTR (CALL, 0u, 1.0,POINTER,INT),	// [17]		Call Function: factorial(var N)
 			SINSTR(IMUL),							// [20]		Multiplicate Result of (factorial(var N))[17] times Value (N)[10]
 			SINSTR(RET),							// [21]		Return Result[20]
 			/// Function Main()						// ARGS=0, LOCALS=0
 			//										 <-- MAIN METHOD!
 			INSTR(IPUSH, N,INT),					// [22]		Push Constant (5) Onto StacK
-			DINSTR(CALL, 0ull, 1.0,POINTER,INT),	// [25]		Call Function: factorial(var N)
+			DINSTR(CALL, 0u, 1.0,POINTER,INT),	// [25]		Call Function: factorial(var N)
 		    SINSTR(PRINT),							// [26]		Print Stack Top
 			SINSTR(HALT)							// [27]		Abort
 		};
@@ -86,26 +80,26 @@ int main() {
 			INSTR(LOAD,-3.0,INT),				 // [0]		Copy Given Argument N Into Current StackFrame
 			INSTR(IPUSH,0.0,INT),				 // [2]		Push Constant (0) Onto Stack
 			SINSTR(IEQ),						 // [4]		IF ((N == 0)) Push TRUE ELSE Push FALSE Onto Stack
-			INSTR(BRFALSE, 10ull ,POINTER),		 // [5]		Jump to Addr 10 if on Stack lays FALSE
+			INSTR(BRFALSE, 10u ,POINTER),		 // [5]		Jump to Addr 10 if on Stack lays FALSE
 			INSTR(IPUSH, 0.0,INT),				 // [7]		Push Constant (0) Onto Stack
 			SINSTR(RET),						 // [9]		Return Constant (0)
 
 			INSTR(LOAD,-3.0,INT),				 // [10]	Copy Given Argument N Into Current StackFrame
 			INSTR(IPUSH,1.0,INT),				 // [12]	Push Constant (1) Onto Stack
 			SINSTR(IEQ),						 // [14]	IF ((N == 0)) Push TRUE ELSE Push FALSE Onto Stack
-			INSTR(BRFALSE, 20ull ,POINTER),		 // [15]	Jump to Addr 10 if on Stack lays FALSE
+			INSTR(BRFALSE, 20u ,POINTER),		 // [15]	Jump to Addr 10 if on Stack lays FALSE
 			INSTR(IPUSH, 1.0,INT),				 // [17]	Push Constant (1) Onto Stack
 			SINSTR(RET),						 // [19]	Return Constant (1)
 
 			INSTR(LOAD,-3.0,INT),				 // [20]    Copy Given Argument N Into Current StackFrame
 			INSTR(IPUSH,1.0,INT),				 // [22]	Push Constant (1) Onto Stack
 			SINSTR(ISUB),						 // [24]	Substract Constant (1) of Value (N) 
-			DINSTR(CALL,0ull,1.0,POINTER,INT),	 // [25]    Call Fibonacci(N-1)
+			DINSTR(CALL,0u,1.0,POINTER,INT),	 // [25]    Call Fibonacci(N-1)
 
 			INSTR(LOAD,-3.0,INT),				 // [28]    Copy Given Argument N Into Current StackFrame
 			INSTR(IPUSH,2.0,INT),				 // [30]	Push Constant (2) Onto Stack
 			SINSTR(ISUB),						 // [32]	Substract Constant (2) of Value (N) 
-			DINSTR(CALL,0ull,1.0,POINTER,INT),	 // [33]    Call Fibonacci(N-2)
+			DINSTR(CALL,0u,1.0,POINTER,INT),	 // [33]    Call Fibonacci(N-2)
 
 			SINSTR(IADD),						 // [36]    Add Fibonacci(N-1) and Fibonacci(N-2)
 			SINSTR(RET)	,						 // [37]	Return Result
@@ -114,7 +108,7 @@ int main() {
 			/// Function Main()					// ARGS=0, LOCALS=0
 			//									 <-- MAIN METHOD!
 			INSTR(IPUSH, N,INT),				// [38]		Push Constant (5) Onto StacK
-			DINSTR(CALL, 0ull, 1.0,POINTER,INT),// [40]		Call Function: factorial(var N)
+			DINSTR(CALL, 0u, 1.0,POINTER,INT),// [40]		Call Function: factorial(var N)
 			SINSTR(PRINT),						// [43]		Print Stack Top
 			SINSTR(HALT)						// [44]		Abort
 
@@ -172,24 +166,13 @@ int main() {
 		//};
 
 		//VM::Memory CodeInstructions2(std::begin(fibonacci2), std::end(fibonacci2));
-		VM::Memory CodeInstructions(std::begin(fibonacci), std::end(fibonacci));
+		VM::Memory CodeInstructions(std::begin(factorial), std::end(factorial));
 
-		VM Machine(CodeInstructions, 38);
+		VM Machine(CodeInstructions, 22);
 		//VM Machine(CodeInstructions2, 66);
 
 		try {
-			///auto exe = &VM::cpu;
 			auto avg = (measure<std::chrono::nanoseconds>::duration(Machine) );
-
-			//auto avg2 = (measure<std::chrono::nanoseconds>::duration(test,N));
-
-
-
-			//std::cout << "Average Time: " << avg.count() * std::pow(10, -6) << " ms\n";
-			//std::cout << "Average Time: " << avg2.count()* std::pow(10, -6) << " ms\n";
-			//std::cout << "Delta Time: " << (avg - avg2).count() * std::pow(10,-6)<<"ms\n";
-
-			//Machine.cpu();
 		}
 		catch (std::exception& e)
 		{
@@ -199,11 +182,4 @@ int main() {
 
 	std::cin.get();
 	return 0;
-}
-
-long long test(long double n)
-{
-	if (n < 2)
-		return 1;
-	return (n*test(n - 1));
 }

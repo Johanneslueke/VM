@@ -240,6 +240,28 @@ namespace vm
 			}
 		});
 
+		Instruction("HSTORE", HSTORE, 1, [Machine]() { //TODO(jojo): Add Type checking !!!!
+			{
+				auto addr = Machine->code[Machine->instructionPointer++];
+				Machine->heap[addr.mValue.mPointer] = Machine->stack[Machine->stackPointer--].mValue.mPointer;
+				Machine->stack.pop_back();
+			}
+
+		});
+		Instruction("HLOAD", HLOAD, 1, [Machine]() {
+			{
+				auto addr = Machine->code[Machine->instructionPointer++];
+				auto val = Machine->heap[addr.mValue.mPointer];
+				Machine->stack.push_back(
+					 VM::Type{
+						VM::Type::CHAR, 
+						VM::Type::Value((size_t)val) 
+					}
+				);
+				Machine->stackPointer++;
+			}
+		});
+
 		Instruction("BRANCH", BRANCH, 1, [Machine]() {
 			{
 				auto addr = Machine->code[Machine->instructionPointer++];

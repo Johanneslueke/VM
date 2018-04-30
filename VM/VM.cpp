@@ -16,81 +16,12 @@
 
 namespace vm
 {
-	VM::VM(const std::vector<Type>& code, int main) : globals(10)//,heap(std::make_unique<char[]>(HeapSize()))	
+	VM::VM(const std::vector<Type>& code, int main) : globals(10)
 	{
 		this->code = code;
 		this->instructionPointer = main;
 
 		Instruction::Init(this);
-
-
-		/* DEMO TEST CODE PROVE OF CONCEPT*/
-		
-		struct circle {};
-		struct aabb {};
-		using shape = std::variant<circle, aabb>;
-
-		shape s0{ circle{} };
-		shape s1{ aabb{} };
-
-		
-
-		helper::match(s1, s0,s1)(
-
-			[](circle, circle, aabb) ->  auto { std::cout << "circle vs circle\n"; },
-			[](circle, aabb, aabb) ->  auto{std::cout << "circle vs aabb\n"; },
-			[](aabb, circle, aabb) ->  auto{std::cout << "aabb vs circle\n"; },
-			[](aabb, aabb, aabb) ->  auto{std::cout << "aabb vs aabb\n"; },
-
-			[](circle, circle, circle) ->  auto{std::cout << "circle vs circle\n"; },
-			[](circle, aabb, circle) ->  auto{std::cout << "circle vs aabb\n"; },
-			[](aabb, circle, circle) ->  auto{std::cout << "aabb vs circle\n"; },
-			[](aabb, aabb, circle) ->  auto{std::cout << "aabb vs aabb\n"; }
-			);
-
-		////////////////////////////////////////////////////////
-
-		struct format {};
-		struct timeout {};
-		using error = std::variant<format, timeout>;
-
-		struct accept {
-			int t = 0;
-		};
-		struct reject {};
-		using ok = std::variant<accept, reject>;
-
-		using response = std::variant<error, ok>;
-		response r{ error { timeout{}} };
-
-
-		helper::match(r)(
-		[](ok x) 
-		{ 
-			helper::match(x)(
-			[](accept y) 
-			{
-				y.t = 1;
-			},
-			[](reject) 
-			{
-			}); 
-		},
-		[](error x)
-		{ 
-			helper::match(x)(
-			[](format) 
-			{
-			}, 
-			[](timeout) 
-			{
-			});
-		}
-		);
-
-
-
-		/* DEMO TEST CODE PROVE OF CONCEPT*/
 
 	}
 
@@ -98,6 +29,53 @@ namespace vm
 
 		
 		
+	}
+
+	size_t VM::fetch() {
+		return code[instructionPointer++].mValue.mValue;// fetch OpCode
+		//instructionPointer++;
+	}
+
+	void VM::validate_opcode(size_t opcode) {
+		if (opcode < 0)
+			throw std::runtime_error("Opcode Mismatch No Negative instructions please ");
+		else if (opcode > MAXCODE)
+			throw std::runtime_error("Opcode not supported: "
+				+ std::to_string(opcode)
+				+ "! at Instruction Pointer("
+				+ std::to_string(instructionPointer - 1) + ").");
+		else if (opcode == 0)
+			throw std::runtime_error("Opcode 0 Does not exist yet!\n ");
+	}
+
+	auto VM::decode(size_t opcode) {
+		return InstructionCode[static_cast<size_t>(opcode)].mOperandCount;
+	}
+
+	void VM::execute(size_t  opcode) {
+		if (trace) {
+			std::cout << std::left
+				<< std::setw(40)
+				<< disassemble()
+				<< std::right
+				<< stackString() << "\n";
+
+			stats.AddMeasurement({ InstructionCode[static_cast<size_t>(opcode)].mName,
+				(measure<std::chrono::nanoseconds>::
+					duration(
+						InstructionCode[static_cast<size_t>(opcode)].mInstruction
+					)).count()
+				});
+
+		}
+		else {
+			stats.AddMeasurement({ InstructionCode[static_cast<size_t>(opcode)].mName,
+				(measure<std::chrono::nanoseconds>::
+					duration(
+						InstructionCode[static_cast<size_t>(opcode)].mInstruction
+					)).count()
+				});
+		}
 	}
 
 	void VM::cpu()
@@ -108,43 +86,11 @@ namespace vm
 		while (instructionPointer < code.size())
 		{
 			try {
-				auto opcode = code[instructionPointer].mValue.mValue;// fetch OpCode
-				instructionPointer++;
-
-				if (opcode < 0)
-					throw std::runtime_error("Opcode Mismatch No Negative instructions please ");
-				else if (opcode > MAXCODE)
-					throw std::runtime_error("Opcode not supported: "
-						+ std::to_string(opcode)
-						+ "! at Instruction Pointer("
-						+ std::to_string(instructionPointer - 1) + ").");
-				else if(opcode == 0)
-					throw std::runtime_error("Opcode 0 Does not exist yet!\n ");
-
-
-				if (trace) {
-					std::cout << std::left
-						<< std::setw(40)
-						<< disassemble()
-						<< std::right
-						<< stackString() << "\n";
-
-					stats.AddMeasurement({ InstructionCode[static_cast<size_t>(opcode)].mName,
-						(measure<std::chrono::nanoseconds>::
-							duration(
-								InstructionCode[static_cast<size_t>(opcode)].mInstruction
-							)).count()
-					});
-	
-				}
-				else {
-					stats.AddMeasurement({ InstructionCode[static_cast<size_t>(opcode)].mName,
-						(measure<std::chrono::nanoseconds>::
-							duration(
-								InstructionCode[static_cast<size_t>(opcode)].mInstruction
-							)).count()
-					});
-				}
+				auto opcode = fetch();
+				validate_opcode(opcode);
+				auto arg = decode(opcode);
+				execute(opcode);
+				
 			}
 			catch (std::out_of_range& e)
 			{
